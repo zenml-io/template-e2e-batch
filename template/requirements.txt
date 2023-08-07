@@ -1,0 +1,3 @@
+zenml[server]
+scikit-learn
+jinja2-time

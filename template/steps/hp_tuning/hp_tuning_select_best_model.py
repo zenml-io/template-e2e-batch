@@ -3,7 +3,8 @@
 
 from typing import Annotated
 
-from artifacts import ModelMetadata, ModelMetadataMaterializer
+from artifacts.materializer import ModelMetadataMaterializer
+from artifacts.model_metadata import ModelMetadata
 from zenml import get_step_context, step
 from zenml.client import Client
 from zenml.logger import get_logger
@@ -31,13 +32,13 @@ def hp_tuning_select_best_model(
     run_name = get_step_context().pipeline_run.name
     run = Client().get_pipeline_run(run_name)
 
-    best_model = None
+    best_model: ModelMetadata = None
     for run_step_name, run_step in run.steps.items():
         if run_step_name.startswith(search_steps_prefix):
             for output_name, output in run_step.outputs.items():
                 if output_name == "best_model":
-                    model = output.load()
-                    if best_model is None or best_model["metric"] < model["metric"]:
+                    model: ModelMetadata = output.load()
+                    if best_model is None or best_model.metric < model.metric:
                         best_model = model
     ### YOUR CODE ENDS HERE ###
-    return best_model or ModelMetadata()  # for types compatibility
+    return best_model or ModelMetadata(None)  # for types compatibility

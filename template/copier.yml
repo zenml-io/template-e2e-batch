@@ -1,0 +1,67 @@
+# GLOBAL PROMPT --------------------------------
+project_name:
+    type: str
+    help: Short name for your project
+    default: ZenML E2E project
+version:
+    type: str
+    help: |
+        Version of your project
+    default: "0.42.1"
+open_source_license:
+    type: str
+    help: >-
+        The license under which your project will be released
+    choices:
+        Apache Software License 2.0: apache
+        MIT license: mit
+        BSD license: bsd
+        ISC license: isc
+        GNU General Public License v3: gpl3
+        Not open source: none
+    default: apache
+full_name:
+    type: str
+    help: >-
+        The name of the person/entity holding the copyright
+    default: ZenML GmbH
+    when: "{{ open_source_license }}"
+email:
+    type: str
+    help: >-
+        The email of the person/entity holding the copyright
+    default: info@zenml.io
+    when: "{{ open_source_license }}"
+auto_format:
+    type: bool
+    help: "Auto-format the generated code with black, ruff and autoflake? \n   (NOTE: you need to have these tools installed in your environment)"
+    default: false
+
+# CONFIGURATION -------------------------
+_templates_suffix: ""
+# _subdirectory: "template"
+_exclude:
+    - /license
+    - /license_header
+
+_tasks:
+    - |
+        # Remove unused imports and variables
+        {{ _copier_python }} --select F401,F841 --fix \
+            --exclude "__init__.py" --isolated \
+            steps pipelines run.py > /dev/null 2>&1 || true
+    - |
+        # Sort imports
+        {{ _copier_python }} -m ruff --select I \
+            --fix --ignore D \
+            steps pipelines run.py > /dev/null 2>&1 || true
+    - |
+        # Auto-format code
+        {{ _copier_python }} -m black \
+            --exclude '' --include '\.pyi?$' -l 79 \
+            steps pipelines run.py > /dev/null 2>&1 || true
+    - |
+        cat WELCOME.txt && rm WELCOME.txt
+
+_jinja_extensions:
+    - jinja2_time.TimeExtension

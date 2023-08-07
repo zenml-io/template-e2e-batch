@@ -1,4 +1,6 @@
 # {% include 'license_header' %}
+
+
 from typing import Any, Dict
 
 from sklearn.base import ClassifierMixin
@@ -50,14 +52,11 @@ class ModelMetadata:
         model_class: ClassifierMixin,
         search_grid: Dict[str, Any] = None,
         params: Dict[str, Any] = None,
+        metric: float = None,
     ) -> None:
         self.model_class = model_class
         self.search_grid = search_grid
         self.params = params
+        self.metric = metric
 
     ### YOUR CODE ENDS HERE ###
-
-
-arams
-
-### YOUR CODE ENDS HERE ###

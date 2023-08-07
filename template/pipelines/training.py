@@ -22,10 +22,9 @@ from zenml import pipeline
 from zenml.integrations.mlflow.steps.mlflow_deployer import (
     mlflow_model_registry_deployer_step,
 )
-from zenml.integrations.mlflow.steps.mlflow_registry import (
-    mlflow_register_model_step,
-)
+from zenml.integrations.mlflow.steps.mlflow_registry import mlflow_register_model_step
 from zenml.logger import get_logger
+from zenml.steps.external_artifact import ExternalArtifact
 
 logger = get_logger(__name__)
 
@@ -90,8 +89,10 @@ def e2e_example_training(
         for i, config_key in enumerate(MetaConfig.supported_models):
             step_name = f"{search_steps_prefix}{i}"
             hp_tuning_single_search(
+                model_metadata=ExternalArtifact(
+                    value=MetaConfig.supported_models[config_key]
+                ),
                 id=step_name,
-                config_key=config_key,
                 dataset_trn=dataset_trn,
                 dataset_tst=dataset_tst,
                 target=target,

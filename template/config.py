@@ -1,6 +1,7 @@
 # {% include 'license_header' %}
 
 
+from artifacts.model_metadata import ModelMetadata
 from pydantic import BaseConfig
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -39,29 +40,29 @@ class MetaConfig(BaseConfig):
     mlflow_model_name = "e2e_example_model"
     target_env = ModelVersionStage.STAGING
     supported_models = {
-        "LogisticRegression": {
-            "class": RandomForestClassifier,
-            "search_grid": dict(
+        "LogisticRegression": ModelMetadata(
+            RandomForestClassifier,
+            search_grid=dict(
                 criterion=["gini", "entropy"],
                 max_depth=[2, 4, 6, 8, 10, 12],
                 min_samples_leaf=range(1, 10),
                 n_estimators=range(50, 500, 25),
             ),
-        },
-        "DecisionTreeClassifier": {
-            "class": DecisionTreeClassifier,
-            "search_grid": dict(
+        ),
+        "DecisionTreeClassifier": ModelMetadata(
+            DecisionTreeClassifier,
+            search_grid=dict(
                 criterion=["gini", "entropy"],
                 max_depth=[2, 4, 6, 8, 10, 12],
                 min_samples_leaf=range(1, 10),
             ),
-        },
+        ),
     }
-    default_model_config = {
-        "class": DecisionTreeClassifier,
-        "params": dict(
+    default_model_config = ModelMetadata(
+        DecisionTreeClassifier,
+        params=dict(
             criterion="gini",
             max_depth=5,
             min_samples_leaf=3,
         ),
-    }
+    )

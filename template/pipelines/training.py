@@ -1,4 +1,4 @@
-{% include 'templates/license_header' %}
+# {% include 'license_header' %}
 
 
 from typing import List, Optional
@@ -18,7 +18,6 @@ from steps import (
     train_data_preprocessor,
     train_data_splitter,
 )
-
 from zenml import pipeline
 from zenml.integrations.mlflow.steps.mlflow_deployer import (
     mlflow_model_registry_deployer_step,

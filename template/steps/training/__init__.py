@@ -1,4 +1,4 @@
-{% include 'templates/license_header' %}
+# {% include 'license_header' %}
 
 
 from .model_evaluator import model_evaluator

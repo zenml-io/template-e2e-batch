@@ -1,4 +1,4 @@
-{% include 'templates/license_header' %}
+# {% include 'license_header' %}
 
 
 from .promote_get_metric import promote_get_metric

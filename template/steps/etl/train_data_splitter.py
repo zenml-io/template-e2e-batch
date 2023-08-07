@@ -1,11 +1,10 @@
-{% include 'templates/license_header' %}
+# {% include 'license_header' %}
 
 
 from typing import Annotated, Tuple
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
-
 from zenml import step
 
 

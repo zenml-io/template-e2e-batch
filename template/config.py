@@ -1,10 +1,9 @@
-{% include 'templates/license_header' %}
+# {% include 'license_header' %}
 
 
 from pydantic import BaseConfig
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
-
 from zenml.config import DockerSettings
 from zenml.integrations.constants import (
     AWS,

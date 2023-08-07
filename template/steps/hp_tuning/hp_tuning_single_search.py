@@ -1,4 +1,4 @@
-{% include 'templates/license_header' %}
+# {% include 'license_header' %}
 
 
 from typing import Annotated, Any, Dict
@@ -8,7 +8,6 @@ from config import MetaConfig
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import RandomizedSearchCV
 from utils.sklearn_materializer import ModelInfoMaterializer
-
 from zenml import step
 from zenml.logger import get_logger
 

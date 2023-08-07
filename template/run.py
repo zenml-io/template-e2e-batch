@@ -1,4 +1,4 @@
-{% include 'templates/license_header' %}
+# {% include 'license_header' %}
 
 
 from datetime import datetime as dt
@@ -7,7 +7,6 @@ from typing import Optional
 import click
 from config import MetaConfig
 from pipelines import e2e_example_batch_inference, e2e_example_training
-
 from zenml.logger import get_logger
 from zenml.steps.external_artifact import ExternalArtifact
 
@@ -179,9 +178,7 @@ def main(
     pipeline_args[
         "run_name"
     ] = f"{MetaConfig.pipeline_name_batch_inference}_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
-    e2e_example_batch_inference.with_options(**pipeline_args)(
-        **run_args_inference
-    )
+    e2e_example_batch_inference.with_options(**pipeline_args)(**run_args_inference)
 
     artifact = ExternalArtifact(
         pipeline_name=MetaConfig.pipeline_name_batch_inference,

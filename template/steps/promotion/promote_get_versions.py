@@ -1,10 +1,9 @@
-{% include 'templates/license_header' %}
+# {% include 'license_header' %}
 
 
 from typing import Annotated, Tuple
 
 from config import MetaConfig
-
 from zenml import step
 from zenml.client import Client
 from zenml.logger import get_logger

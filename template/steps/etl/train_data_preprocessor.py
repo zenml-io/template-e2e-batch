@@ -1,4 +1,4 @@
-{% include 'templates/license_header' %}
+# {% include 'license_header' %}
 
 
 from typing import Annotated, List, Optional, Tuple
@@ -7,7 +7,6 @@ import pandas as pd
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
 from utils.preprocess import ColumnsDropper, DataFrameCaster, NADropper
-
 from zenml import step
 
 
@@ -55,15 +54,11 @@ def train_data_preprocessor(
         preprocess_pipeline.steps.append(("drop_na", NADropper()))
     if drop_columns:
         # Drop columns
-        preprocess_pipeline.steps.append(
-            ("drop_columns", ColumnsDropper(drop_columns))
-        )
+        preprocess_pipeline.steps.append(("drop_columns", ColumnsDropper(drop_columns)))
     if normalize:
         # Normalize the data
         preprocess_pipeline.steps.append(("normalize", MinMaxScaler()))
-    preprocess_pipeline.steps.append(
-        ("cast", DataFrameCaster(dataset_trn.columns))
-    )
+    preprocess_pipeline.steps.append(("cast", DataFrameCaster(dataset_trn.columns)))
     dataset_trn = preprocess_pipeline.fit_transform(dataset_trn)
     dataset_tst = preprocess_pipeline.transform(dataset_tst)
     ### YOUR CODE ENDS HERE ###

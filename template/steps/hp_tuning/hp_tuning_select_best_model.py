@@ -1,10 +1,9 @@
-{% include 'templates/license_header' %}
+# {% include 'license_header' %}
 
 
-from typing import Annotated, Any, Dict
+from typing import Annotated
 
-from utils.sklearn_materializer import ModelInfoMaterializer
-
+from artifacts import ModelMetadata, ModelMetadataMaterializer
 from zenml import get_step_context, step
 from zenml.client import Client
 from zenml.logger import get_logger
@@ -12,10 +11,10 @@ from zenml.logger import get_logger
 logger = get_logger(__name__)
 
 
-@step(output_materializers=ModelInfoMaterializer)
+@step(output_materializers=ModelMetadataMaterializer)
 def hp_tuning_select_best_model(
     search_steps_prefix: str,
-) -> Annotated[Dict[str, Any], "best_model"]:
+) -> Annotated[ModelMetadata, "best_model"]:
     """Find best model across all HP tuning attempts.
 
     This is an example of a model hyperparameter tuning step that takes
@@ -38,10 +37,7 @@ def hp_tuning_select_best_model(
             for output_name, output in run_step.outputs.items():
                 if output_name == "best_model":
                     model = output.load()
-                    if (
-                        best_model is None
-                        or best_model["metric"] < model["metric"]
-                    ):
+                    if best_model is None or best_model["metric"] < model["metric"]:
                         best_model = model
     ### YOUR CODE ENDS HERE ###
-    return best_model or {}  # for types compatibility
+    return best_model or ModelMetadata()  # for types compatibility

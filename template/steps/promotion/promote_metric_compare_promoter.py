@@ -1,8 +1,7 @@
-{% include 'templates/license_header' %}
+# {% include 'license_header' %}
 
 
 from config import MetaConfig
-
 from zenml import step
 from zenml.client import Client
 from zenml.logger import get_logger

@@ -1,2 +1,0 @@
-{%- macro license() %}{% include 'config/license' %}{% endmacro -%}
-# {{ license() | replace('\n', '\n# ') }}

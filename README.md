@@ -1,4 +1,4 @@
-# 📜 ZenML Starter Project Template
+# 💫 ZenML End-to-End Tabular Training with Batch Predictions Project Template
 
 What would you need to get a quick understanding of the ZenML framework and
 start building your ML pipelines? The answer is a comprehensive project template

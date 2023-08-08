@@ -30,7 +30,7 @@ logger = get_logger(__name__)
     on_failure=notify_on_failure,
     extra=DEFAULT_PIPELINE_EXTRAS,
 )
-def {{pipeline_name}}_batch_inference():
+def {{product_name}}_batch_inference():
     """
     Model batch inference pipeline.
 

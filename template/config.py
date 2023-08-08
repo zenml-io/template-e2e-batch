@@ -8,7 +8,9 @@ from sklearn.tree import DecisionTreeClassifier
 from zenml.config import DockerSettings
 from zenml.integrations.constants import (
     AWS,
+{%- if data_quality_checks %}
     EVIDENTLY,
+{%- endif %}
     KUBEFLOW,
     KUBERNETES,
     MLFLOW,
@@ -21,7 +23,9 @@ PIPELINE_SETTINGS = dict(
     docker=DockerSettings(
         required_integrations=[
             AWS,
+{%- if data_quality_checks %}
             EVIDENTLY,
+{%- endif %}
             KUBEFLOW,
             KUBERNETES,
             MLFLOW,
@@ -31,13 +35,16 @@ PIPELINE_SETTINGS = dict(
     )
 )
 
-DEFAULT_PIPELINE_EXTRAS = dict(notify_on_success=True, notify_on_failure=True)
+DEFAULT_PIPELINE_EXTRAS = dict(
+    notify_on_success={{notify_on_successes}}, 
+    notify_on_failure={{notify_on_failures}}
+)
 
 
 class MetaConfig(BaseConfig):
-    pipeline_name_training = "{{pipeline_name}}_training"
-    pipeline_name_batch_inference = "{{pipeline_name}}_batch_inference"
-    mlflow_model_name = "{{pipeline_name}}_model"
+    pipeline_name_training = "{{product_name}}_training"
+    pipeline_name_batch_inference = "{{product_name}}_batch_inference"
+    mlflow_model_name = "{{product_name}}_model"
     target_env = ModelVersionStage.STAGING
     supported_models = {
         "LogisticRegression": ModelMetadata(

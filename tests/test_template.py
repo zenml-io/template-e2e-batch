@@ -34,7 +34,7 @@ def generate_and_run_project(
     tmp_path_factory: pytest.TempPathFactory,
     open_source_license: Optional[str] = "apache",
     auto_format: bool = True,
-    pipeline_name: str = "e2e_pipeline_pytest",
+    product_name: str = "e2e_pipeline_pytest",
     hyperparameters_tuning: bool = True,
     metric_compare_promotion: bool = True,
     data_quality_checks: bool = True,
@@ -46,7 +46,7 @@ def generate_and_run_project(
         "version": "0.0.1",
         "open_source_license": str(open_source_license).lower(),
         "auto_format": auto_format,
-        "pipeline_name": pipeline_name,
+        "product_name": product_name,
         "hyperparameters_tuning": hyperparameters_tuning,
         "metric_compare_promotion": metric_compare_promotion,
         "data_quality_checks": data_quality_checks,
@@ -86,14 +86,14 @@ def generate_and_run_project(
 
     # check the pipeline run is successful
     for pipeline_suffix in ["_training", "_batch_inference"]:
-        pipeline = Client().get_pipeline(pipeline_name + pipeline_suffix)
+        pipeline = Client().get_pipeline(product_name + pipeline_suffix)
         assert pipeline
         runs = pipeline.runs
         assert len(runs) == 1
         assert runs[0].status == ExecutionStatus.COMPLETED
 
         # clean up
-        Client().delete_pipeline(pipeline_name + pipeline_suffix)
+        Client().delete_pipeline(product_name + pipeline_suffix)
 
     os.chdir(current_dir)
     shutil.rmtree(dst_path)
@@ -125,7 +125,7 @@ def test_no_auto_format(
     )
 
 
-def test_custom_pipeline_name(
+def test_custom_product_name(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,
 ):
@@ -133,7 +133,7 @@ def test_custom_pipeline_name(
 
     generate_and_run_project(
         tmp_path_factory=tmp_path_factory,
-        pipeline_name="custom_pipeline_name",
+        product_name="custom_product_name",
     )
 
 def test_no_hp_tuning(

@@ -3,7 +3,7 @@
 
 from zenml.steps.external_artifact import ExternalArtifact
 from zenml.logger import get_logger
-from pipelines import {{pipeline_name}}_batch_inference, {{pipeline_name}}_training
+from pipelines import {{product_name}}_batch_inference, {{product_name}}_training
 from config import MetaConfig
 import click
 from typing import Optional
@@ -159,19 +159,19 @@ def main(
 
         pipeline_args[
             "run_name"
-        ] = f"{{pipeline_name}}_training_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
-        {{pipeline_name}}_training.with_options(**pipeline_args)(**run_args_train)
+        ] = f"{MetaConfig.pipeline_name_training}_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
+        {{product_name}}_training.with_options(**pipeline_args)(**run_args_train)
         logger.info("Training pipeline finished successfully!")
 
     # Execute Batch Inference Pipeline
     run_args_inference = {}
     pipeline_args[
         "run_name"
-    ] = f"{{pipeline_name}}_batch_inference_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
-    {{pipeline_name}}_batch_inference.with_options(**pipeline_args)(**run_args_inference)
+    ] = f"{MetaConfig.pipeline_name_batch_inference}_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
+    {{product_name}}_batch_inference.with_options(**pipeline_args)(**run_args_inference)
 
     artifact = ExternalArtifact(
-        pipeline_name="{{pipeline_name}}_batch_inference",
+        pipeline_name=MetaConfig.pipeline_name_batch_inference,
         artifact_name="predictions",
     )
     logger.info(

@@ -29,7 +29,6 @@ def promote_get_versions() -> (
     """
 
     ### ADD YOUR OWN CODE HERE - THIS IS JUST AN EXAMPLE ###
-
     none_versions = model_registry.list_model_versions(
         name=MetaConfig.mlflow_model_name,
         metadata={},
@@ -49,5 +48,6 @@ def promote_get_versions() -> (
         logger.info(f"Currently promoted model version is {current_version}")
     else:
         logger.info("No currently promoted model version found.")
+    ### YOUR CODE ENDS HERE ###
 
     return latest_versions, current_version

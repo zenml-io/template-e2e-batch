@@ -36,6 +36,7 @@ def generate_and_run_project(
     auto_format: bool = True,
     pipeline_name: str = "e2e_pipeline_pytest",
     hyperparameters_tuning: bool = True,
+    metric_compare_promotion: bool = True,
 ):
     """Generate and run the starter project with different options."""
 
@@ -46,6 +47,7 @@ def generate_and_run_project(
         "auto_format": auto_format,
         "pipeline_name": pipeline_name,
         "hyperparameters_tuning": hyperparameters_tuning,
+        "metric_compare_promotion": metric_compare_promotion,
     }
     if open_source_license:
         answers["email"] = "pytest@zenml.io"
@@ -141,4 +143,15 @@ def test_no_hp_tuning(
     generate_and_run_project(
         tmp_path_factory=tmp_path_factory,
         hyperparameters_tuning=False
+    )
+
+def test_latest_promotion(
+    clean_zenml_client,
+    tmp_path_factory: pytest.TempPathFactory,
+):
+    """Test using latest promotion."""
+
+    generate_and_run_project(
+        tmp_path_factory=tmp_path_factory,
+        metric_compare_promotion=False
     )

@@ -15,9 +15,13 @@ from steps import (
     model_trainer,
     notify_on_failure,
     notify_on_success,
+{%- if metric_compare_promotion %}
     promote_get_metric,
-    promote_get_versions,
     promote_metric_compare_promoter,
+{%- else %}
+    promote_latest,
+{%- endif %}
+    promote_get_versions,
     train_data_preprocessor,
     train_data_splitter,
 )
@@ -134,6 +138,7 @@ def {{pipeline_name}}_training(
     latest_version, current_version = promote_get_versions(
         after=["mlflow_register_model_step"],
     )
+{%- if metric_compare_promotion %}
     latest_deployment = mlflow_model_registry_deployer_step(
         id="deploy_latest_model_version",
         registry_model_name=MetaConfig.mlflow_model_name,
@@ -165,6 +170,14 @@ def {{pipeline_name}}_training(
         latest_version=latest_version,
         current_version=current_version,
     )
+    last_step_name = "promote_metric_compare_promoter"
+{%- else %}
+    promote_latest(
+         latest_version=latest_version,
+        current_version=current_version,
+    )
+    last_step_name = "promote_latest"
+{%- endif %}
 
-    notify_on_success(after=["promote_metric_compare_promoter"])
+    notify_on_success(after=[last_step_name])
     ### YOUR CODE ENDS HERE ###

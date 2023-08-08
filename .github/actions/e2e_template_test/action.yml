@@ -40,6 +40,13 @@ runs:
       run: |
         zenml integration install sklearn mlflow s3 kubernetes kubeflow slack evidently -y
 
+    # e2e example was not released yet, so relies on some recent develop changes
+    # TODO: remove after #1715, #1711, #1707 and #1703 are released
+    - name: Install develop ZenML
+      shell: bash
+      run: |
+        pip install --upgrade git+https://github.com/zenml-io/zenml.git@develop
+
     - name: Run pytests
       shell: bash
       env:

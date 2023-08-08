@@ -9,7 +9,9 @@ from .etl import (
     train_data_preprocessor,
     train_data_splitter,
 )
+{%- if hyperparameter_tuning -%}
 from .hp_tuning import hp_tuning_select_best_model, hp_tuning_single_search
+{%- endif %}
 from .inference import inference_get_current_version, inference_predict
 from .promotion import (
     promote_get_metric,

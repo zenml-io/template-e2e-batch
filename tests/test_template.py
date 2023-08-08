@@ -35,6 +35,7 @@ def generate_and_run_project(
     open_source_license: Optional[str] = "apache",
     auto_format: bool = True,
     pipeline_name: str = "e2e_pipeline_pytest",
+    hyperparameters_tuning: bool = True,
 ):
     """Generate and run the starter project with different options."""
 
@@ -44,6 +45,7 @@ def generate_and_run_project(
         "open_source_license": str(open_source_license).lower(),
         "auto_format": auto_format,
         "pipeline_name": pipeline_name,
+        "hyperparameters_tuning": hyperparameters_tuning,
     }
     if open_source_license:
         answers["email"] = "pytest@zenml.io"
@@ -123,9 +125,20 @@ def test_custom_pipeline_name(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,
 ):
-    """Test turning off code auto-format."""
+    """Test using custom pipeline name."""
 
     generate_and_run_project(
         tmp_path_factory=tmp_path_factory,
         pipeline_name="custom_pipeline_name",
+    )
+
+def test_no_hp_tuning(
+    clean_zenml_client,
+    tmp_path_factory: pytest.TempPathFactory,
+):
+    """Test turning off hyperparameter tuning."""
+
+    generate_and_run_project(
+        tmp_path_factory=tmp_path_factory,
+        hyperparameters_tuning=False
     )

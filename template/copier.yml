@@ -51,6 +51,10 @@ pipeline_name:
     type: str
     help: "The name of the pipeline"
     default: e2e_pipeline
+hyperparameters_tuning:
+    type: bool
+    help: "Whether to run hyperparameter tuning"
+    default: True
 auto_format:
     type: bool
     help: "Auto-format the generated code with black, ruff and autoflake? \n   (NOTE: you need to have these tools installed in your environment)"

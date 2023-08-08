@@ -3,11 +3,14 @@
 
 from typing import List, Optional
 
+from artifacts.materializer import ModelMetadataMaterializer
 from config import DEFAULT_PIPELINE_EXTRAS, PIPELINE_SETTINGS, MetaConfig
 from steps import (
     data_loader,
+{%- if hyperparameters_tuning %}
     hp_tuning_select_best_model,
     hp_tuning_single_search,
+{%- endif %}
     model_evaluator,
     model_trainer,
     notify_on_failure,
@@ -25,6 +28,7 @@ from zenml.integrations.mlflow.steps.mlflow_deployer import (
 from zenml.integrations.mlflow.steps.mlflow_registry import mlflow_register_model_step
 from zenml.logger import get_logger
 from zenml.steps.external_artifact import ExternalArtifact
+
 
 logger = get_logger(__name__)
 
@@ -83,10 +87,10 @@ def {{pipeline_name}}_training(
     )
 
     ########## Hyperparameter tuning stage ##########
-    if hp_tuning_enabled:
-        after = []
-        search_steps_prefix = "hp_tuning_search_"
-        for i, config_key in enumerate(MetaConfig.supported_models):
+{%- if hyperparameters_tuning %}
+    after = []
+    search_steps_prefix = "hp_tuning_search_"
+    for i, config_key in enumerate(MetaConfig.supported_models):
             step_name = f"{search_steps_prefix}{i}"
             hp_tuning_single_search(
                 model_metadata=ExternalArtifact(
@@ -98,11 +102,12 @@ def {{pipeline_name}}_training(
                 target=target,
             )
             after.append(step_name)
-        best_model_config = hp_tuning_select_best_model(
-            search_steps_prefix=search_steps_prefix, after=after
-        )
-    else:
-        best_model_config = MetaConfig.default_model_config
+    best_model_config = hp_tuning_select_best_model(
+        search_steps_prefix=search_steps_prefix, after=after
+    )
+{%- else %}
+    best_model_config = ExternalArtifact(value=MetaConfig.default_model_config, materializer=ModelMetadataMaterializer)
+{%- endif %}
 
     ########## Training stage ##########
     model = model_trainer(

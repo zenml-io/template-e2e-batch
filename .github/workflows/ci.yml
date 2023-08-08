@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: ["main", "develop"]
+    paths-ignore: ["README.md"]
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+    paths-ignore: ["README.md"]
+
+concurrency:
+  # New commit on branch cancels running workflows of the same branch
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test_templates:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        stack-name: [local]
+    env:
+      ZENML_DEBUG: true
+      ZENML_ANALYTICS_OPT_IN: false
+      ZENML_LOGGING_VERBOSITY: INFO
+    steps:
+      - name: Check out repository code
+        uses: .github/actions/e2e_template_test
+        with:
+          stack-name: ${{ matrix.stack-name }}

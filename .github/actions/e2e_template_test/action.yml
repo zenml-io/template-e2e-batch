@@ -13,33 +13,32 @@ runs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+    
+    - name: Concatenate requirements
+      shell: bash
+      run: |
+        cat requirements.txt test-requirements.txt template/requirements.txt >> all-requirements.txt
 
     - uses: syphar/restore-virtualenv@v1
       id: cache-virtualenv
       with:
-        requirement_files: 'test-requirements.txt'
+        requirement_files: all-requirements.txt
 
     - uses: syphar/restore-pip-download-cache@v1
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       with:
-        requirement_files: 'test-requirements.txt'
+        requirement_files: all-requirements.txt
         
     - name: Install requirements
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        pip install -r test-requirements.txt
+        pip install -r all-requirements.txt
     
     - name: Install integrations
       shell: bash
       run: |
         zenml integration install sklearn mlflow s3 kubernetes kubeflow slack evidently -y
-
-    # # we neen to do this separately because zenml conflicts with latest copier
-    # # on pydantic
-    # - name: Upgrade copier
-    #   run: |
-    #     pip install --upgrade copier
 
     - name: Run pytests
       shell: bash

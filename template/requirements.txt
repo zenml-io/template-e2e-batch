@@ -1,2 +1,1 @@
 zenml[server] # TODO: restrict and release this once we have a breaking change in core
-scikit-learn

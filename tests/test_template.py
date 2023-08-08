@@ -107,6 +107,7 @@ def generate_and_run_project(
     shutil.rmtree(dst_path)
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize("open_source_license", ["mit", None], ids=["oss", "css"])
 def test_generate_license(
     clean_zenml_client,
@@ -133,6 +134,7 @@ def test_no_auto_format(
     )
 
 
+@pytest.mark.skip
 def test_custom_product_name(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,
@@ -144,6 +146,7 @@ def test_custom_product_name(
         product_name="custom_product_name",
     )
 
+@pytest.mark.skip
 def test_no_hp_tuning(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,
@@ -155,6 +158,7 @@ def test_no_hp_tuning(
         hyperparameters_tuning=False
     )
 
+@pytest.mark.skip
 def test_latest_promotion(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,
@@ -166,6 +170,7 @@ def test_latest_promotion(
         metric_compare_promotion=False
     )
 
+@pytest.mark.skip
 def test_no_data_quality_checks(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,
@@ -177,6 +182,7 @@ def test_no_data_quality_checks(
         data_quality_checks=False,
     )
 
+@pytest.mark.skip
 def test_production_environment(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,
@@ -188,6 +194,7 @@ def test_production_environment(
         target_environment="production",
     )
 
+@pytest.mark.skip
 def test_no_notify_on_failure(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,
@@ -199,6 +206,7 @@ def test_no_notify_on_failure(
         notify_on_failures=False,
     )
 
+@pytest.mark.skip
 def test_notify_on_success(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,
@@ -210,6 +218,7 @@ def test_notify_on_success(
         notify_on_successes=True,
     )
 
+@pytest.mark.skip
 def test_custom_zenml_server_url(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,

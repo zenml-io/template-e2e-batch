@@ -45,7 +45,7 @@ runs:
     - name: Install develop ZenML
       shell: bash
       run: |
-        pip install --upgrade git+https://github.com/zenml-io/zenml.git@develop
+        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@develop
 
     - name: Run pytests
       shell: bash

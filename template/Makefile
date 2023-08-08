@@ -7,7 +7,6 @@ setup: remote-login
 setup:
 {%- endif %}
 	pip install -r requirements.txt
-	zenml up
 	zenml integration install sklearn mlflow s3 kubernetes kubeflow slack evidently -y
 # TODO: add stack configuration ^^^
 

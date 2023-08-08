@@ -3,6 +3,8 @@ You can now run the following commands to get started:
 
     cd {{ _copier_conf.dst_path }}
     make setup
+    # optional, start ZenML Dashboard
+    zenml up
     python run.py
 
 Next, you should take a look at the `{{ _copier_conf.dst_path }}/README.md` file in the generated project.

@@ -40,7 +40,7 @@ def generate_and_run_project(
     data_quality_checks: bool = True,
     target_environment: str = "staging",
     notify_on_failures: bool = True,
-    notify_on_successes: bool = True,
+    notify_on_successes: bool = False,
     zenml_server_url: str = "",
 ):
     """Generate and run the starter project with different options."""
@@ -199,7 +199,7 @@ def test_no_notify_on_failure(
         notify_on_failures=False,
     )
 
-def test_no_notify_on_success(
+def test_notify_on_success(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,
 ):
@@ -207,7 +207,7 @@ def test_no_notify_on_success(
 
     generate_and_run_project(
         tmp_path_factory=tmp_path_factory, 
-        notify_on_successes=False,
+        notify_on_successes=True,
     )
 
 def test_custom_zenml_server_url(

@@ -22,7 +22,7 @@ version:
     type: str
     help: |
         Version of your project
-    default: "0.42.1"
+    default: "0.0.1"
 open_source_license:
     type: str
     help: >-
@@ -49,7 +49,7 @@ email:
     when: "{{ open_source_license != 'none' }}"
 product_name:
     type: str
-    help: "The name of the data product you are building"
+    help: The technical name of the data product you are building
     default: e2e_use_case
 target_environment:
     type: str
@@ -77,11 +77,11 @@ notify_on_failures:
 notify_on_successes:
     type: bool
     help: "Whether to notify on pipeline successes?"
-    default: True
+    default: False
 auto_format:
     type: bool
     help: "Auto-format the generated code with black, ruff and autoflake? \n   (NOTE: you need to have these tools installed in your environment)"
-    default: false
+    default: False
 zenml_server_url:
     type: str
     help: "The URL of the ZenML server [Optional]"

@@ -85,7 +85,7 @@ We also output `preprocess_pipeline` as an output artifact from `train_data_prep
 
 ### [Continuous Training] Training Pipeline: Model architecture search and hyperparameter tuning
 
-[📂 Code folder](template/steps/{%%20if%20hyperparameters_tuning%20%}hp_tuning{%%20endif%20%}/)
+[📂 Code folder](template/steps/%7B%25%20if%20hyperparameters_tuning%20%25%7Dhp_tuning%7B%25%20endif%20%25%7D)
 <p align="center">
   <img height=400 src="assets/02_hp.png">
 </p>
@@ -204,7 +204,7 @@ df_inference = inference_data_preprocessor(
 
 ### [Continuous Deployment] Batch Inference: Drift reporting
 
-[📂 Code folder](template/steps/{%%20if%20data_quality_checks%20%}data_quality{%%20endif%20%}/)
+[📂 Code folder](template/steps/%7B%25%20if%20data_quality_checks%20%25%7Ddata_quality%7B%25%20endif%20%25%7D)
 
 On the drift reporting stage we will use [standard step](https://docs.zenml.io/user-guide/component-guide/data-validators/evidently#how-do-you-use-it) `evidently_report_step` to build Evidently report to assess certain data quality metrics. `evidently_report_step` has reach set of options, but for this example, we will build only `DataQualityPreset` metrics preset to get a number of NA values in reference and current datasets.
 

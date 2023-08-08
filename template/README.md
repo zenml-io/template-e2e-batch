@@ -119,7 +119,7 @@ It consists of two pipelines with the following high-level steps:
   * Run predictions using a model labeled as an inference model
   * Store predictions as an artifact for future use
 
-In [the repository documentation](https://github.com/zenml-io/template-e2e-batch#-how-the-example-is-implemented),
+In [the repository documentation](https://github.com/zenml-io/template-e2e-batch#-how-this-template-is-implemented),
 you can find more details about every step of this template.
 
 The project code is meant to be used as a template for your projects. For

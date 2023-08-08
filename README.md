@@ -96,7 +96,7 @@ To create parallel processing of computationally expensive operations we use a l
 
 You can find more information about the current state of [Hyperparameter Tuning using ZenML in documentation](https://docs.zenml.io/user-guide/advanced-guide/pipelining-features/hyper-parameter-tuning).
 
-Another important concept introduced at this stage is [Custom Materializers](https://docs.zenml.io/user-guide/advanced-guide/artifact-management/handle-custom-data-types#custom-materializers): `hp_tuning_single_search` produce an output containing best parameters as a normal python dictionary and model architecture as a sklearn model class. Implementation of `ModelInfoMaterializer` is [here](utils/sklearn_materializer.py).
+Another important concept introduced at this stage is [Custom Materializers](https://docs.zenml.io/user-guide/advanced-guide/artifact-management/handle-custom-data-types#custom-materializers): `hp_tuning_single_search` produce an output containing best parameters as a normal python dictionary and model architecture as a sklearn model class. Implementation of `ModelInfoMaterializer` is [here](template/artifacts/materializer.py).
 
 Later on, this materializer class is passed into steps to create such an output explicitly.
 <details>
@@ -172,7 +172,6 @@ To achieve this we would retrieve the model version from [Model Registry](https:
 
 ### [Continuous Deployment] Batch Inference
 
-[Back to Table of Contents](#table-of-contents)
 <p align="center">
   <img height=500 src="assets/05_batch_inference.png">
 </p>

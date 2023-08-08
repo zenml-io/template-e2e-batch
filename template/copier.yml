@@ -53,7 +53,15 @@ pipeline_name:
     default: e2e_pipeline
 hyperparameters_tuning:
     type: bool
-    help: "Whether to run hyperparameter tuning"
+    help: "Whether to run hyperparameter tuning?"
+    default: True
+metric_compare_promotion:
+    type: bool
+    help: "Whether to promote model versions based on metrics? Otherwise, latest trained will get promoted."
+    default: True
+data_quality_checks:
+    type: bool
+    help: "Whether to run data quality checks?"
     default: True
 auto_format:
     type: bool

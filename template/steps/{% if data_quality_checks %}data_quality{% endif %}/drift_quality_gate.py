@@ -7,7 +7,7 @@ from zenml import step
 
 
 @step
-def drift_na_count(report: str, na_drift_tolerance: float = 0.1) -> None:
+def drift_quality_gate(report: str, na_drift_tolerance: float = 0.1) -> None:
     """Analyze the Evidently Report and raise RuntimeError on
     high deviation of NA count in 2 datasets.
 
@@ -19,6 +19,7 @@ def drift_na_count(report: str, na_drift_tolerance: float = 0.1) -> None:
     Raises:
         RuntimeError: significant drift in NA Count
     """
+    ### ADD YOUR OWN CODE HERE - THIS IS JUST AN EXAMPLE ###
     result = json.loads(report)["metrics"][0]["result"]
     if result["reference"]["number_of_missing_values"] > 0 and (
         abs(
@@ -31,3 +32,5 @@ def drift_na_count(report: str, na_drift_tolerance: float = 0.1) -> None:
         raise RuntimeError(
             "Number of NA values in scoring dataset is significantly different compared to train dataset."
         )
+    ### YOUR CODE ENDS HERE ###
+    

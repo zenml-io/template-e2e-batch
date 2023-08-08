@@ -55,12 +55,6 @@ Examples:
     help="Disable caching for the pipeline run.",
 )
 @click.option(
-    "--no-hp-tuning",
-    is_flag=True,
-    default=False,
-    help="Whether to skip Hyperparameter tuning step and use default model.",
-)
-@click.option(
     "--no-drop-na",
     is_flag=True,
     default=False,
@@ -111,7 +105,6 @@ Examples:
 )
 def main(
     no_cache: bool = False,
-    no_hp_tuning: bool = False,
     no_drop_na: bool = False,
     no_normalize: bool = False,
     drop_columns: Optional[str] = None,
@@ -131,7 +124,6 @@ def main(
 
     Args:
         no_cache: If `True` cache will be disabled.
-        no_hp_tuning: If `True` HP tuning will be disabled.
         no_drop_na: If `True` NA values will not be dropped from the dataset.
         no_normalize: If `True` normalization will not be done for the dataset.
         drop_columns: List of comma-separated names of columns to drop from the dataset.
@@ -154,7 +146,6 @@ def main(
     if not only_inference:
         # Execute Training Pipeline
         run_args_train = {
-            "hp_tuning_enabled": not no_hp_tuning,
             "drop_na": not no_drop_na,
             "normalize": not no_normalize,
             "random_seed": 42,

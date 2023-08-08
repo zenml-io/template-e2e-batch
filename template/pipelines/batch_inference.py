@@ -4,7 +4,9 @@
 from config import DEFAULT_PIPELINE_EXTRAS, PIPELINE_SETTINGS, MetaConfig
 from steps import (
     data_loader,
-    drift_na_count,
+{%- if data_quality_checks %}
+    drift_quality_gate,
+{%- endif %}
     inference_data_preprocessor,
     inference_get_current_version,
     inference_predict,
@@ -49,6 +51,7 @@ def {{pipeline_name}}_batch_inference():
         target=target,
     )
 
+{%- if data_quality_checks %}
     ########## DataQuality stage  ##########
     report, _ = evidently_report_step(
         reference_dataset=ExternalArtifact(
@@ -61,8 +64,8 @@ def {{pipeline_name}}_batch_inference():
             EvidentlyMetricConfig.metric("DataQualityPreset"),
         ],
     )
-    drift_na_count(report)
-
+    drift_quality_gate(report)
+{%- endif %}
     ########## Inference stage  ##########
     registry_model_version = inference_get_current_version()
     deployment_service = mlflow_model_registry_deployer_step(
@@ -73,7 +76,9 @@ def {{pipeline_name}}_batch_inference():
     inference_predict(
         deployment_service=deployment_service,
         dataset_inf=df_inference,
-        after=["drift_na_count"],
+{%- if data_quality_checks %}
+        after=["drift_quality_gate"],
+{%- endif %}
     )
 
     notify_on_success(after=["inference_predict"])

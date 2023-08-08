@@ -37,6 +37,7 @@ def generate_and_run_project(
     pipeline_name: str = "e2e_pipeline_pytest",
     hyperparameters_tuning: bool = True,
     metric_compare_promotion: bool = True,
+    data_quality_checks: bool = True,
 ):
     """Generate and run the starter project with different options."""
 
@@ -48,6 +49,7 @@ def generate_and_run_project(
         "pipeline_name": pipeline_name,
         "hyperparameters_tuning": hyperparameters_tuning,
         "metric_compare_promotion": metric_compare_promotion,
+        "data_quality_checks": data_quality_checks,
     }
     if open_source_license:
         answers["email"] = "pytest@zenml.io"
@@ -154,4 +156,15 @@ def test_latest_promotion(
     generate_and_run_project(
         tmp_path_factory=tmp_path_factory,
         metric_compare_promotion=False
+    )
+
+def test_no_data_quality_checks(
+    clean_zenml_client,
+    tmp_path_factory: pytest.TempPathFactory,
+):
+    """Test skipping Data Quality checks."""
+
+    generate_and_run_project(
+        tmp_path_factory=tmp_path_factory, 
+        data_quality_checks=False,
     )

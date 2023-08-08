@@ -2,7 +2,9 @@
 
 
 from .alerts import notify_on_failure, notify_on_success
-from .data_quality import drift_na_count
+{%- if data_quality_checks %}
+from .data_quality import drift_quality_gate
+{%- endif %}
 from .etl import (
     data_loader,
     inference_data_preprocessor,

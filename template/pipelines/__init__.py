@@ -1,5 +1,5 @@
 # {% include 'license_header' %}
 
 
-from .batch_inference import e2e_example_batch_inference
-from .training import e2e_example_training
+from .batch_inference import {{pipeline_name}}_batch_inference
+from .training import {{pipeline_name}}_training

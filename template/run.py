@@ -1,14 +1,13 @@
 # {% include 'license_header' %}
 
 
-from datetime import datetime as dt
-from typing import Optional
-
-import click
-from config import MetaConfig
-from pipelines import e2e_example_batch_inference, e2e_example_training
-from zenml.logger import get_logger
 from zenml.steps.external_artifact import ExternalArtifact
+from zenml.logger import get_logger
+from pipelines import {{pipeline_name}}_batch_inference, {{pipeline_name}}_training
+from config import MetaConfig
+import click
+from typing import Optional
+from datetime import datetime as dt
 
 logger = get_logger(__name__)
 
@@ -169,19 +168,19 @@ def main(
 
         pipeline_args[
             "run_name"
-        ] = f"{MetaConfig.pipeline_name_training}_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
-        e2e_example_training.with_options(**pipeline_args)(**run_args_train)
+        ] = f"{{pipeline_name}}_training_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
+        {{pipeline_name}}_training.with_options(**pipeline_args)(**run_args_train)
         logger.info("Training pipeline finished successfully!")
 
     # Execute Batch Inference Pipeline
     run_args_inference = {}
     pipeline_args[
         "run_name"
-    ] = f"{MetaConfig.pipeline_name_batch_inference}_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
-    e2e_example_batch_inference.with_options(**pipeline_args)(**run_args_inference)
+    ] = f"{{pipeline_name}}_batch_inference_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
+    {{pipeline_name}}_batch_inference.with_options(**pipeline_args)(**run_args_inference)
 
     artifact = ExternalArtifact(
-        pipeline_name=MetaConfig.pipeline_name_batch_inference,
+        pipeline_name="{{pipeline_name}}_batch_inference",
         artifact_name="predictions",
     )
     logger.info(

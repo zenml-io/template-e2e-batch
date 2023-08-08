@@ -35,9 +35,9 @@ DEFAULT_PIPELINE_EXTRAS = dict(notify_on_success=True, notify_on_failure=True)
 
 
 class MetaConfig(BaseConfig):
-    pipeline_name_training = "e2e_example_training"
-    pipeline_name_batch_inference = "e2e_example_batch_inference"
-    mlflow_model_name = "e2e_example_model"
+    pipeline_name_training = "{{pipeline_name}}_training"
+    pipeline_name_batch_inference = "{{pipeline_name}}_batch_inference"
+    mlflow_model_name = "{{pipeline_name}}_model"
     target_env = ModelVersionStage.STAGING
     supported_models = {
         "LogisticRegression": ModelMetadata(

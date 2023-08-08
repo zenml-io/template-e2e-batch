@@ -34,7 +34,7 @@ logger = get_logger(__name__)
     on_failure=notify_on_failure,
     extra=DEFAULT_PIPELINE_EXTRAS,
 )
-def e2e_example_training(
+def {{pipeline_name}}_training(
     test_size: float = 0.2,
     drop_na: Optional[bool] = None,
     normalize: Optional[bool] = None,

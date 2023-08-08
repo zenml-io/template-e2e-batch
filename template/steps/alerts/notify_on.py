@@ -30,13 +30,13 @@ def build_message(status: str) -> str:
 def notify_on_failure() -> None:
     """Notifies user on step failure. Used in Hook."""
     step_context = get_step_context()
-    if step_context.pipeline_run.config.extra["notify_on_failure"]:
+    if alerter and step_context.pipeline_run.config.extra["notify_on_failure"]:
         alerter.post(message=build_message(status="failed"))
 
 
 @step(enable_cache=False)
 def notify_on_success() -> None:
-    """Notifies user on step success."""
+    """Notifies user on pipeline success."""
     step_context = get_step_context()
-    if step_context.pipeline_run.config.extra["notify_on_success"]:
+    if alerter and step_context.pipeline_run.config.extra["notify_on_success"]:
         alerter.post(message=build_message(status="succeeded"))

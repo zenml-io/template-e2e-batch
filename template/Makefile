@@ -1,11 +1,13 @@
-#{% if zenml_server_url %}
+{%- if zenml_server_url != '' %}
 remote-login:
-	zenml connect --url ${ZENML_SERVER_URL} --username ${ZENML_SERVER_USER} --password ${ZENML_SERVER_PASSWORD}
+	zenml connect --url "{{zenml_server_url}}"
 
 setup: remote-login
-#{% else %}
+{%- else %}
 setup:
-#{% endif %}
+{%- endif %}
+	pip install -r requirements.txt
+	zenml up
 	zenml integration install sklearn mlflow s3 kubernetes kubeflow slack evidently -y
 # TODO: add stack configuration ^^^
 

@@ -38,6 +38,10 @@ def generate_and_run_project(
     hyperparameters_tuning: bool = True,
     metric_compare_promotion: bool = True,
     data_quality_checks: bool = True,
+    target_environment: str = "staging",
+    notify_on_failures: bool = True,
+    notify_on_successes: bool = True,
+    zenml_server_url: str = "",
 ):
     """Generate and run the starter project with different options."""
 
@@ -50,6 +54,10 @@ def generate_and_run_project(
         "hyperparameters_tuning": hyperparameters_tuning,
         "metric_compare_promotion": metric_compare_promotion,
         "data_quality_checks": data_quality_checks,
+        "target_environment": target_environment,
+        "notify_on_failures": notify_on_failures,
+        "notify_on_successes": notify_on_successes,
+        "zenml_server_url": zenml_server_url
     }
     if open_source_license:
         answers["email"] = "pytest@zenml.io"
@@ -168,3 +176,48 @@ def test_no_data_quality_checks(
         tmp_path_factory=tmp_path_factory, 
         data_quality_checks=False,
     )
+
+def test_production_environment(
+    clean_zenml_client,
+    tmp_path_factory: pytest.TempPathFactory,
+):
+    """Test deploying to production stage."""
+
+    generate_and_run_project(
+        tmp_path_factory=tmp_path_factory, 
+        target_environment="production",
+    )
+
+def test_no_notify_on_failure(
+    clean_zenml_client,
+    tmp_path_factory: pytest.TempPathFactory,
+):
+    """Test skipping notification on failure."""
+
+    generate_and_run_project(
+        tmp_path_factory=tmp_path_factory, 
+        notify_on_failures=False,
+    )
+
+def test_no_notify_on_success(
+    clean_zenml_client,
+    tmp_path_factory: pytest.TempPathFactory,
+):
+    """Test skipping notification on success."""
+
+    generate_and_run_project(
+        tmp_path_factory=tmp_path_factory, 
+        notify_on_successes=False,
+    )
+
+def test_custom_zenml_server_url(
+    clean_zenml_client,
+    tmp_path_factory: pytest.TempPathFactory,
+):
+    """Test deploying to production stage."""
+
+    generate_and_run_project(
+        tmp_path_factory=tmp_path_factory, 
+        zenml_server_url="foo",
+    )
+

@@ -51,6 +51,13 @@ product_name:
     type: str
     help: "The name of the data product you are building"
     default: e2e_use_case
+target_environment:
+    type: str
+    help: "The target environment for your project"
+    choices:
+        - production
+        - staging
+    default: staging
 hyperparameters_tuning:
     type: bool
     help: "Whether to run hyperparameter tuning?"
@@ -75,6 +82,10 @@ auto_format:
     type: bool
     help: "Auto-format the generated code with black, ruff and autoflake? \n   (NOTE: you need to have these tools installed in your environment)"
     default: false
+zenml_server_url:
+    type: str
+    help: "The URL of the ZenML server [Optional]"
+    default: ""
 
 
 # CONFIGURATION -------------------------

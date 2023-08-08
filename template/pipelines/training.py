@@ -88,15 +88,15 @@ def {{product_name}}_training(
         drop_columns=drop_columns,
     )
 
-    ########## Hyperparameter tuning stage ##########
 {%- if hyperparameters_tuning %}
+    ########## Hyperparameter tuning stage ##########
     after = []
     search_steps_prefix = "hp_tuning_search_"
-    for i, config_key in enumerate(MetaConfig.supported_models):
+    for i, model_search_configuration in enumerate(MetaConfig.model_search_space):
             step_name = f"{search_steps_prefix}{i}"
             hp_tuning_single_search(
                 model_metadata=ExternalArtifact(
-                    value=MetaConfig.supported_models[config_key]
+                    value=model_search_configuration,
                 ),
                 id=step_name,
                 dataset_trn=dataset_trn,
@@ -107,14 +107,16 @@ def {{product_name}}_training(
     best_model_config = hp_tuning_select_best_model(
         search_steps_prefix=search_steps_prefix, after=after
     )
-{%- else %}
-    best_model_config = ExternalArtifact(value=MetaConfig.default_model_config, materializer=ModelMetadataMaterializer)
 {%- endif %}
 
     ########## Training stage ##########
     model = model_trainer(
         dataset_trn=dataset_trn,
-        best_model_config=best_model_config,
+{%- if hyperparameters_tuning %}
+        model_config=best_model_config,
+{%- else %}
+        model_config=ExternalArtifact(value=MetaConfig.model_configuration, materializer=ModelMetadataMaterializer),
+{%- endif %}
         random_seed=random_seed,
         target=target,
     )

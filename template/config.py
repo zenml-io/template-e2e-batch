@@ -45,9 +45,18 @@ class MetaConfig(BaseConfig):
     pipeline_name_training = "{{product_name}}_training"
     pipeline_name_batch_inference = "{{product_name}}_batch_inference"
     mlflow_model_name = "{{product_name}}_model"
+{%- if target_environment == 'production' %}
+    target_env = ModelVersionStage.PRODUCTION
+{%- else %}
     target_env = ModelVersionStage.STAGING
-    supported_models = {
-        "LogisticRegression": ModelMetadata(
+{%- endif %}
+
+    ### ADD YOUR OWN CODE HERE - THIS IS JUST AN EXAMPLE ###
+{%- if hyperparameters_tuning %}
+    # This set contains all the models that you want to evaluate
+    # during hyperparameter tuning stage.
+    model_search_space = {
+        ModelMetadata(
             RandomForestClassifier,
             search_grid=dict(
                 criterion=["gini", "entropy"],
@@ -56,7 +65,7 @@ class MetaConfig(BaseConfig):
                 n_estimators=range(50, 500, 25),
             ),
         ),
-        "DecisionTreeClassifier": ModelMetadata(
+        ModelMetadata(
             DecisionTreeClassifier,
             search_grid=dict(
                 criterion=["gini", "entropy"],
@@ -65,7 +74,9 @@ class MetaConfig(BaseConfig):
             ),
         ),
     }
-    default_model_config = ModelMetadata(
+{%- else %}
+    # This model configuration will be used for the training stage.
+    model_configuration = ModelMetadata(
         DecisionTreeClassifier,
         params=dict(
             criterion="gini",
@@ -73,3 +84,4 @@ class MetaConfig(BaseConfig):
             min_samples_leaf=3,
         ),
     )
+{%- endif %}

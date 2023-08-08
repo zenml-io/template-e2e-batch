@@ -28,7 +28,7 @@ if not experiment_tracker or not isinstance(
 @step(experiment_tracker=experiment_tracker.name)
 def model_trainer(
     dataset_trn: pd.DataFrame,
-    best_model_config: ModelMetadata,
+    model_config: ModelMetadata,
     target: str,
     random_seed: int = 42,
 ) -> Annotated[ClassifierMixin, "model"]:
@@ -55,7 +55,7 @@ def model_trainer(
 
     Args:
         dataset_trn: The preprocessed train dataset.
-        best_model_config: `ModelMetadata` of the best model
+        model_config: `ModelMetadata` to train on
         target: Name of target columns in dataset.
         random_seed: Fixed seed of random generator.
 
@@ -66,8 +66,8 @@ def model_trainer(
     ### ADD YOUR OWN CODE HERE - THIS IS JUST AN EXAMPLE ###
     # Initialize the model with the hyperparameters indicated in the step
     # parameters and train it on the training set.
-    hyperparameters = best_model_config.params
-    model_class = best_model_config.model_class
+    hyperparameters = model_config.params
+    model_class = model_config.model_class
     if "random_seed" in model_class.__init__.__code__.co_varnames:
         model = model_class(random_seed=random_seed, **hyperparameters)
     else:

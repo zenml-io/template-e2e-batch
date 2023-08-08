@@ -29,6 +29,11 @@ runs:
       shell: bash
       run: |
         pip install -r test-requirements.txt
+    
+    - name: Install integrations
+      shell: bash
+      run: |
+        zenml integration install sklearn mlflow s3 kubernetes kubeflow slack evidently -y
 
     # # we neen to do this separately because zenml conflicts with latest copier
     # # on pydantic

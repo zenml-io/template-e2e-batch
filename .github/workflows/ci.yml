@@ -27,8 +27,8 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-        
-      - name: Check out repository code
+
+      - name: Run tests
         uses: ./.github/actions/e2e_template_test
         with:
           stack-name: ${{ matrix.stack-name }}

@@ -14,6 +14,12 @@ runs:
       with:
         python-version: '3.9'
     
+    - name: Configure git
+      shell: bash
+      run: |
+        git config --global user.email "info@zenml.io"
+        git config --global user.name "ZenML GmbH"
+    
     - name: Concatenate requirements
       shell: bash
       run: |

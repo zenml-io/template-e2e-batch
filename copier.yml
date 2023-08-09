@@ -92,8 +92,8 @@ zenml_server_url:
 _templates_suffix: ""
 _subdirectory: template
 _exclude:
-    - /license
-    - /license_header
+    - license
+    - license_header
 
 _tasks:
     - |

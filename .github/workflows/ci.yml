@@ -32,3 +32,11 @@ jobs:
         uses: ./.github/actions/e2e_template_test
         with:
           stack-name: ${{ matrix.stack-name }}
+  
+  ci_passed:
+    needs: test_templates
+    runs-on: ubuntu-latest
+    steps:
+      - name: All Passed!
+        run: |
+          echo "All Passed!"

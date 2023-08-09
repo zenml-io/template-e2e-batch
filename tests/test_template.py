@@ -26,7 +26,7 @@ from zenml.client import Client
 from zenml.enums import ExecutionStatus
 
 TEMPLATE_DIRECTORY = str(
-    pathlib.Path.joinpath(pathlib.Path(__file__).parent.parent, "template")
+    pathlib.Path.joinpath(pathlib.Path(__file__).parent.parent)
 )
 
 

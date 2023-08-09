@@ -1,4 +1,4 @@
-# {% include 'license_header' %}
+# {% include 'template/license_header' %}
 
 
 from zenml.steps.external_artifact import ExternalArtifact

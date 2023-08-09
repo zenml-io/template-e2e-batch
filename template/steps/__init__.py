@@ -1,4 +1,4 @@
-# {% include 'license_header' %}
+# {% include 'template/license_header' %}
 
 
 from .alerts import notify_on_failure, notify_on_success

@@ -1,4 +1,4 @@
-# {% include 'license_header' %}
+# {% include 'template/license_header' %}
 
 
 from .inference_get_current_version import inference_get_current_version

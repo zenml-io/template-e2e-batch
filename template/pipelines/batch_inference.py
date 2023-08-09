@@ -1,4 +1,4 @@
-# {% include 'license_header' %}
+# {% include 'template/license_header' %}
 
 
 from config import DEFAULT_PIPELINE_EXTRAS, PIPELINE_SETTINGS, MetaConfig

@@ -1,4 +1,4 @@
-# {% include 'license_header' %}
+# {% include 'template/license_header' %}
 
 
 from .batch_inference import {{product_name}}_batch_inference

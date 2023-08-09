@@ -90,6 +90,7 @@ zenml_server_url:
 
 # CONFIGURATION -------------------------
 _templates_suffix: ""
+_subdirectory: template
 _exclude:
     - /license
     - /license_header

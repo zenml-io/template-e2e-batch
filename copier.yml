@@ -91,9 +91,19 @@ _exclude:
     - license
     - license_header
 
-_tasks:
-    - |
-        cat WELCOME.txt && rm WELCOME.txt
+_message_after_copy: |
+    Congratulations, your project has been generated in the `{{ _copier_conf.dst_path }}` directory.
+    You can now run the following commands to get started:
+
+        cd {{ _copier_conf.dst_path }}
+        make setup
+        # optional, start ZenML Dashboard
+        zenml up
+        python run.py
+
+    Next, you should take a look at the `{{ _copier_conf.dst_path }}/README.md` file in the generated project.
+    Happy coding!
+
 
 _jinja_extensions:
     - jinja2_time.TimeExtension

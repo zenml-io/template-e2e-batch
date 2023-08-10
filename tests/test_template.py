@@ -33,7 +33,6 @@ TEMPLATE_DIRECTORY = str(
 def generate_and_run_project(
     tmp_path_factory: pytest.TempPathFactory,
     open_source_license: Optional[str] = "apache",
-    auto_format: bool = True,
     product_name: str = "e2e_pipeline_pytest",
     hyperparameters_tuning: bool = True,
     metric_compare_promotion: bool = True,
@@ -49,7 +48,6 @@ def generate_and_run_project(
         "project_name": "Pytest Templated Project",
         "version": "0.0.1",
         "open_source_license": str(open_source_license).lower(),
-        "auto_format": auto_format,
         "product_name": product_name,
         "hyperparameters_tuning": hyperparameters_tuning,
         "metric_compare_promotion": metric_compare_promotion,
@@ -118,18 +116,6 @@ def test_generate_license(
     generate_and_run_project(
         tmp_path_factory=tmp_path_factory,
         open_source_license=open_source_license,
-    )
-
-
-def test_no_auto_format(
-    clean_zenml_client,
-    tmp_path_factory: pytest.TempPathFactory,
-):
-    """Test turning off code auto-format."""
-
-    generate_and_run_project(
-        tmp_path_factory=tmp_path_factory,
-        auto_format=False,
     )
 
 

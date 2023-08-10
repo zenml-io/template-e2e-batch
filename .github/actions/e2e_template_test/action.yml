@@ -33,10 +33,10 @@ runs:
 
     # e2e example was not released yet, so relies on some recent develop changes
     # TODO: replace with normal install after #1715, #1711, #1707 and #1703 are released
-    - name: Install ZenML
+    - name: Install ZenML and wheel
       shell: bash
       run: |
-        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@develop
+        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@develop wheel
     
     - name: Concatenate requirements
       shell: bash
@@ -59,6 +59,13 @@ runs:
       shell: bash
       run: |
         pip install -r all-requirements.txt
+    
+    # e2e example was not released yet, so relies on some recent develop changes
+    # TODO: remove step after #1715, #1711, #1707 and #1703 are released
+    - name: Reinstall ZenML after requirements
+      shell: bash
+      run: |
+        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@develop
 
     - name: Run pytests
       shell: bash

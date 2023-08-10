@@ -78,10 +78,6 @@ notify_on_successes:
     type: bool
     help: "Whether to notify on pipeline successes?"
     default: False
-auto_format:
-    type: bool
-    help: "Auto-format the generated code with black, ruff and autoflake? \n   (NOTE: you need to have these tools installed in your environment)"
-    default: False
 zenml_server_url:
     type: str
     help: "The URL of the ZenML server [Optional]"
@@ -96,21 +92,6 @@ _exclude:
     - license_header
 
 _tasks:
-    - |
-        # Remove unused imports and variables
-        {{ _copier_python }} --select F401,F841 --fix \
-            --exclude "__init__.py" --isolated \
-            steps pipelines run.py > /dev/null 2>&1 || true
-    - |
-        # Sort imports
-        {{ _copier_python }} -m ruff --select I \
-            --fix --ignore D \
-            steps pipelines run.py > /dev/null 2>&1 || true
-    - |
-        # Auto-format code
-        {{ _copier_python }} -m black \
-            --exclude '' --include '\.pyi?$' -l 79 \
-            steps pipelines run.py > /dev/null 2>&1 || true
     - |
         cat WELCOME.txt && rm WELCOME.txt
 

@@ -90,7 +90,8 @@ _subdirectory: template
 _exclude:
     - license
     - license_header
-
+# this functionality is in latest, but not in 8.1.0 copier release
+# so will not work properly right away
 _message_after_copy: |
     Congratulations, your project has been generated in the `{{ _copier_conf.dst_path }}` directory.
     You can now run the following commands to get started:

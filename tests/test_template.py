@@ -15,6 +15,7 @@
 
 import os
 import pathlib
+import platform
 import shutil
 import subprocess
 import sys
@@ -75,35 +76,36 @@ def generate_and_run_project(
         unsafe=True,
     ) as worker:
         worker.run_copy()
+    
+    # MLFlow Deployer not supported on Windows
+    if platform.system().lower()!="windows":
+        # run the project
+        call = [sys.executable, "run.py"]
 
-    # run the project
-    call = [sys.executable, "run.py"]
+        try:
+            subprocess.check_call(
+                call,
+                cwd=str(dst_path),
+                env=os.environ.copy(),
+            )
+        except Exception as e:
+            raise RuntimeError(
+                f"Failed to run project generated with parameters: {answers}"
+            ) from e
 
-    try:
-        subprocess.check_call(
-            call,
-            cwd=str(dst_path),
-            env=os.environ.copy(),
-        )
-    except Exception as e:
-        raise RuntimeError(
-            f"Failed to run project generated with parameters: {answers}"
-        ) from e
+        # check the pipeline run is successful
+        for pipeline_suffix in ["_training", "_batch_inference"]:
+            pipeline = Client().get_pipeline(product_name + pipeline_suffix)
+            assert pipeline
+            runs = pipeline.runs
+            assert len(runs) == 1
+            assert runs[0].status == ExecutionStatus.COMPLETED
 
-    # check the pipeline run is successful
-    for pipeline_suffix in ["_training", "_batch_inference"]:
-        pipeline = Client().get_pipeline(product_name + pipeline_suffix)
-        assert pipeline
-        runs = pipeline.runs
-        assert len(runs) == 1
-        assert runs[0].status == ExecutionStatus.COMPLETED
-
-        # clean up
-        Client().delete_pipeline(product_name + pipeline_suffix)
+            # clean up
+            Client().delete_pipeline(product_name + pipeline_suffix)
 
     os.chdir(current_dir)
     shutil.rmtree(dst_path)
-
 
 @pytest.mark.parametrize("open_source_license", ["mit", None], ids=["oss", "css"])
 def test_generate_license(
@@ -117,7 +119,6 @@ def test_generate_license(
         tmp_path_factory=tmp_path_factory,
         open_source_license=open_source_license,
     )
-
 
 def test_custom_product_name(
     clean_zenml_client,

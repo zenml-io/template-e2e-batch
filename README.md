@@ -64,7 +64,25 @@ other ML framework.
 
 ## 🚀 Generate a ZenML Project
 
-TODO : zenml cli (init?)
+First, to use the templates, you need to have Zenml and its `templates` extras installed: 
+
+```bash
+pip install zenml[templates]
+```
+
+Now you can generate a project from one of the existing templates by using the `--template` flag with the `zenml init` command:
+
+```bash
+zenml init --template <short_name_of_template>
+# example: zenml init --template e2e_batch
+```
+
+Running the command above will result in input prompts being shown to you. If you would like to rely on default values for the ZenML project template - you can add `--template-with-defaults` to the same command, like this:
+
+```bash
+zenml init --template <short_name_of_template> --template-with-defaults
+# example: zenml init --template e2e_batch --template-with-defaults
+```
 
 ## 🧰 How this template is implemented
 

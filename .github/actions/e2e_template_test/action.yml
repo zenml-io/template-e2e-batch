@@ -3,6 +3,9 @@ inputs:
   stack-name:
     description: 'Name of ZenML stack to build (see `tests/conftest.py:configure_stack()`)'
     required: true
+  os:
+    description: 'Operating system to run tests on'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -14,11 +17,19 @@ runs:
       with:
         python-version: '3.9'
     
-    - name: Configure git
+    - name: Configure git (non-Windows)
+      if: ${{ inputs.os != 'windows-latest' }}
       shell: bash
       run: |
         git config --global user.email "info@zenml.io"
         git config --global user.name "ZenML GmbH"
+    
+    - name: Configure git (Windows)
+      if: ${{ inputs.os == 'windows-latest' }}
+      shell: bash
+      run: |
+        "C:\Program Files\Git\bin\git.exe" config --global user.email "info@zenml.io"
+        "C:\Program Files\Git\bin\git.exe" config --global user.name "ZenML GmbH"
     
     - name: Concatenate requirements
       shell: bash

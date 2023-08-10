@@ -120,7 +120,16 @@ _tasks:
           steps pipelines run.py > /dev/null 2>&1 || true
       {% endif %}
     - |
-        cat WELCOME.txt && rm WELCOME.txt
+      echo "Congratulations, your project has been generated in the '{{ _copier_conf.dst_path }}' directory."
+      echo "You can now run the following commands to get started:"
+      echo "   cd {{ _copier_conf.dst_path }}"
+      echo "   make setup"
+      echo "   # optional, start ZenML Dashboard"
+      echo "   zenml up"
+      echo "   python run.py"
+      echo 
+      echo "Next, you should take a look at the '{{ _copier_conf.dst_path }}/README.md' file in the generated project."
+      echo "Happy coding!"
 
 _jinja_extensions:
     - jinja2_time.TimeExtension

@@ -34,7 +34,8 @@ runs:
     - name: Concatenate requirements
       shell: bash
       run: |
-        cat requirements.txt test-requirements.txt template/requirements.txt >> all-requirements.txt
+        zenml integration export-requirements -o integration-requirements.txt sklearn mlflow s3 kubernetes kubeflow slack evidently
+        cat integration-requirements.txt requirements.txt test-requirements.txt template/requirements.txt >> all-requirements.txt
 
     - uses: syphar/restore-virtualenv@v1
       id: cache-virtualenv
@@ -52,11 +53,6 @@ runs:
       run: |
         pip install -r all-requirements.txt
     
-    - name: Install integrations
-      shell: bash
-      run: |
-        zenml integration install sklearn mlflow s3 kubernetes kubeflow slack evidently -y
-
     # e2e example was not released yet, so relies on some recent develop changes
     # TODO: remove after #1715, #1711, #1707 and #1703 are released
     - name: Install develop ZenML

@@ -96,17 +96,17 @@ _tasks:
     - |
         {{ _copier_python }} -m ruff --select F401,F841 --fix \
             --exclude "__init__.py" --isolated \
-            steps pipelines run.py > /dev/null 2>&1 || true
+            steps pipelines run.py
     # Sort imports
     - |
         {{ _copier_python }} -m ruff --select I \
             --fix --ignore D \
-            steps pipelines run.py > /dev/null 2>&1 || true
+            steps pipelines run.py
     # Auto-format code
     - |
         {{ _copier_python }} -m black \
             --exclude '' --include '\.pyi?$' -l 79 \
-            steps pipelines run.py > /dev/null 2>&1 || true
+            steps pipelines run.py
     - |
         cat WELCOME.txt && rm WELCOME.txt
 

@@ -30,6 +30,13 @@ runs:
       run: |
         "C:\Program Files\Git\bin\git.exe" config --global user.email "info@zenml.io"
         "C:\Program Files\Git\bin\git.exe" config --global user.name "ZenML GmbH"
+
+    # e2e example was not released yet, so relies on some recent develop changes
+    # TODO: replace with normal install after #1715, #1711, #1707 and #1703 are released
+    - name: Install ZenML
+      shell: bash
+      run: |
+        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@develop
     
     - name: Concatenate requirements
       shell: bash
@@ -52,13 +59,6 @@ runs:
       shell: bash
       run: |
         pip install -r all-requirements.txt
-    
-    # e2e example was not released yet, so relies on some recent develop changes
-    # TODO: remove after #1715, #1711, #1707 and #1703 are released
-    - name: Install develop ZenML
-      shell: bash
-      run: |
-        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@develop
 
     - name: Run pytests
       shell: bash

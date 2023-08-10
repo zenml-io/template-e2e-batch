@@ -92,18 +92,18 @@ _exclude:
     - license_header
 
 _tasks:
+    # Remove unused imports and variables
     - |
-        # Remove unused imports and variables
         {{ _copier_python }} --select F401,F841 --fix \
             --exclude "__init__.py" --isolated \
             steps pipelines run.py > /dev/null 2>&1 || true
+    # Sort imports
     - |
-        # Sort imports
         {{ _copier_python }} -m ruff --select I \
             --fix --ignore D \
             steps pipelines run.py > /dev/null 2>&1 || true
+    # Auto-format code
     - |
-        # Auto-format code
         {{ _copier_python }} -m black \
             --exclude '' --include '\.pyi?$' -l 79 \
             steps pipelines run.py > /dev/null 2>&1 || true

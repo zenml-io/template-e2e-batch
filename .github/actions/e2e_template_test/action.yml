@@ -42,7 +42,7 @@ runs:
       shell: bash
       run: |
         zenml integration export-requirements -o integration-requirements.txt sklearn mlflow s3 kubernetes kubeflow slack evidently
-        cat integration-requirements.txt requirements.txt test-requirements.txt template/requirements.txt >> all-requirements.txt
+        cat requirements.txt test-requirements.txt template/requirements.txt integration-requirements.txt >> all-requirements.txt
 
     - uses: syphar/restore-virtualenv@v1
       id: cache-virtualenv

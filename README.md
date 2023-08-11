@@ -14,7 +14,7 @@ It consists of two pipelines with the following high-level steps:
 
 * [CT] Training
   * Load, split, and preprocess the training dataset
-  * Search for an optimal model architecture and tune its' hyperparameters
+  * Search for an optimal model architecture and tune its hyperparameters
   * Train the model and evaluate its performance on the holdout set
   * Compare a recently trained model with one used for inference and trained earlier
   * If a recently trained model - label it as a new inference model
@@ -55,7 +55,7 @@ other ML framework.
 | Technical product name | The technical name to prefix all tech assets (pipelines, models, etc.) | e2e_use_case |
 | Target environment | The target environment for deployments/promotions (one of `staging`, `production`) | staging |
 | Use hyperparameter tuning | Whether to use hyperparameter tuning or not | yes |
-| Use metric based promotion | Whether to compare metric of interest to make model version promotion | yes |
+| Use metric-based promotion | Whether to compare metric of interest to make model version promotion | yes |
 | Use data quality checks | Whether to use data quality checks based on Evidently report to assess data before inference | yes |
 | Notifications on failure | Whether to notify about pipelines failures | yes |
 | Notifications on success | Whether to notify about pipelines successes | no |
@@ -112,7 +112,7 @@ To ensure the high quality of ML models many ML Engineers go for automated hyper
 
 To create parallel processing of computationally expensive operations we use a loop over predefined potential architectures and respective parameters search grid and create one step for each candidate. After the steps are created we need to collect results (one best model per each search step) in a `hp_tuning_select_best_model` step to define the final winner and pass it to training. To ensure that collection goes smoothly and in full we use an `after` statement populated with all search steps names, so the selector job will wait for the completion of all searches.
 
-You can find more information about the current state of [Hyperparameter Tuning using ZenML in documentation](https://docs.zenml.io/user-guide/advanced-guide/pipelining-features/hyper-parameter-tuning).
+You can find more information about the current state of [Hyperparameter Tuning using ZenML in the documentation](https://docs.zenml.io/user-guide/advanced-guide/pipelining-features/hyper-parameter-tuning).
 
 Another important concept introduced at this stage is [Custom Materializers](https://docs.zenml.io/user-guide/advanced-guide/artifact-management/handle-custom-data-types#custom-materializers): `hp_tuning_single_search` produce an output containing best parameters as a normal python dictionary and model architecture as a sklearn model class. Implementation of `ModelInfoMaterializer` is [here](template/artifacts/materializer.py).
 
@@ -137,7 +137,7 @@ def hp_tuning_select_best_model(
   <img height=500 src="assets/03_train.png">
 </p>
 
-Having the best model architecture and its' hyperparameters defined in the previous stage makes it possible to train a quality model. Also, model training is the right place to bring an [Experiment Tracker](https://docs.zenml.io/user-guide/component-guide/experiment-trackers) into the picture - we will log all metrics and model itself into the [Experiment Tracker](https://docs.zenml.io/user-guide/component-guide/experiment-trackers), so we can register our model in a [Model Registry](https://docs.zenml.io/user-guide/component-guide/model-registries) and pass it down to a [Model Deployer](https://docs.zenml.io/user-guide/component-guide/model-deployers) easily and traceable. We will use information from Active Stack to make implementation agnostic of the underlying infrastructure.
+Having the best model architecture and its hyperparameters defined in the previous stage makes it possible to train a quality model. Also, model training is the right place to bring an [Experiment Tracker](https://docs.zenml.io/user-guide/component-guide/experiment-trackers) into the picture - we will log all metrics and model itself into the [Experiment Tracker](https://docs.zenml.io/user-guide/component-guide/experiment-trackers), so we can register our model in a [Model Registry](https://docs.zenml.io/user-guide/component-guide/model-registries) and pass it down to a [Model Deployer](https://docs.zenml.io/user-guide/component-guide/model-deployers) easily and traceable. We will use information from Active Stack to make implementation agnostic of the underlying infrastructure.
 <details>
   <summary>Code snippet 💻</summary>
 

@@ -30,7 +30,6 @@ def configure_stack():
 
     if stack_name == "local":
         components = {}
-        # TODO: add alerter configuration
         for component in [
             ("mlflow_local", "mlflow", StackComponentType.EXPERIMENT_TRACKER),
             ("mlflow_local", "mlflow", StackComponentType.MODEL_REGISTRY),

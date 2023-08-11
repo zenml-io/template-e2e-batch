@@ -1,0 +1,6 @@
+autopep8
+pytest
+pytest-randomly
+ruff
+black
+isort

@@ -6,8 +6,12 @@ inputs:
   os:
     description: 'Operating system to run tests on'
     required: true
-  ref:
+  ref_zenml:
     description: 'Ref of ZenML package'
+    required: false
+    default: ''
+  ref_template:
+    description: 'Ref of this tempalte repo'
     required: false
     default: ''
 runs:
@@ -15,6 +19,10 @@ runs:
   steps:
     - name: Check out repository code
       uses: actions/checkout@v3
+      with:
+        repository: zenml-io/template-e2e-batch
+        ref: ${{ inputs.ref_template }}
+        path: ./local_checkout
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -36,13 +44,13 @@ runs:
         "C:\Program Files\Git\bin\git.exe" config --global user.name "ZenML GmbH"
 
     - name: Install ZenML and wheel
-      if: ${{ inputs.ref != '' }}
+      if: ${{ inputs.ref_zenml != '' }}
       shell: bash
       run: |
-        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref }} wheel
+        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref_zenml }} wheel
     
     - name: Install ZenML and wheel
-      if: ${{ inputs.ref == '' }}
+      if: ${{ inputs.ref_zenml == '' }}
       shell: bash
       run: |
         pip install --force --upgrade zenml wheel
@@ -50,30 +58,30 @@ runs:
     - name: Concatenate requirements
       shell: bash
       run: |
-        zenml integration export-requirements -o integration-requirements.txt sklearn mlflow s3 kubernetes kubeflow slack evidently
-        cat requirements.txt test-requirements.txt template/requirements.txt integration-requirements.txt >> all-requirements.txt
+        zenml integration export-requirements -o ./local_checkout/integration-requirements.txt sklearn mlflow s3 kubernetes kubeflow slack evidently
+        cat ./local_checkout/requirements.txt ./local_checkout/test-requirements.txt ./local_checkout/template/requirements.txt ./local_checkout/integration-requirements.txt >> ./local_checkout/all-requirements.txt
 
     - uses: syphar/restore-virtualenv@v1
       id: cache-virtualenv
       with:
-        requirement_files: all-requirements.txt
+        requirement_files: ./local_checkout/all-requirements.txt
 
     - uses: syphar/restore-pip-download-cache@v1
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       with:
-        requirement_files: all-requirements.txt
+        requirement_files: ./local_checkout/all-requirements.txt
         
     - name: Install requirements
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        pip install -r all-requirements.txt
+        pip install -r ./local_checkout/all-requirements.txt
     
     - name: Reinstall ZenML after requirements
-      if: ${{ inputs.ref != '' }}
+      if: ${{ inputs.ref_zenml != '' }}
       shell: bash
       run: |
-        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref }}
+        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref_zenml }}
 
     - name: Run pytests
       shell: bash

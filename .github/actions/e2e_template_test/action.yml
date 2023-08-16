@@ -88,4 +88,4 @@ runs:
       env:
         ZENML_STACK_NAME: ${{ inputs.stack-name }}
       run: |
-        pytest tests
+        pytest ./local_checkout/tests

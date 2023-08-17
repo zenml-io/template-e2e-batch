@@ -53,7 +53,7 @@ runs:
       if: ${{ inputs.ref-zenml != '' }}
       shell: bash
       run: |
-        pip install --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }} wheel
+        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }} wheel
     
     - name: Install ZenML and wheel
       if: ${{ inputs.ref-zenml == '' }}
@@ -65,7 +65,7 @@ runs:
       shell: bash
       run: |
         zenml integration export-requirements -o ./local_checkout/integration-requirements.txt sklearn mlflow s3 kubernetes kubeflow slack evidently
-        cat ./local_checkout/requirements.txt ./local_checkout/test-requirements.txt ./local_checkout/template/requirements.txt ./local_checkout/integration-requirements.txt >> ./local_checkout/all-requirements.txt
+        cat ./local_checkout/test-requirements.txt ./local_checkout/template/requirements.txt ./local_checkout/integration-requirements.txt >> ./local_checkout/all-requirements.txt
 
     - uses: syphar/restore-virtualenv@v1
       id: cache-virtualenv
@@ -83,11 +83,6 @@ runs:
       run: |
         pip install -r ./local_checkout/all-requirements.txt
     
-    - name: Reinstall ZenML after requirements
-      if: ${{ inputs.ref-zenml != '' }}
-      shell: bash
-      run: |
-        pip install --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }}
 
     - name: Run pytests
       shell: bash

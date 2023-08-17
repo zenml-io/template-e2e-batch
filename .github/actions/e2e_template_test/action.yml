@@ -72,26 +72,10 @@ runs:
         zenml integration export-requirements -o ./local_checkout/integration-requirements.txt sklearn mlflow s3 kubernetes kubeflow slack evidently
         cat ./local_checkout/requirements.txt ./local_checkout/test-requirements.txt ./local_checkout/integration-requirements.txt >> ./local_checkout/all-requirements.txt
 
-    - uses: syphar/restore-virtualenv@v1
-      id: cache-virtualenv
-      with:
-        requirement_files: ./local_checkout/all-requirements.txt
-
-    - uses: syphar/restore-pip-download-cache@v1
-      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
-      with:
-        requirement_files: ./local_checkout/all-requirements.txt
-        
     - name: Install requirements
-      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       shell: bash
       run: |
         pip install -r ./local_checkout/all-requirements.txt
-
-    - name: Debug output
-      shell: bash
-      run: |
-        pip freeze | grep zenml
 
     - name: Run pytests
       shell: bash

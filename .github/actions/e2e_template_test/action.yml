@@ -53,13 +53,13 @@ runs:
       if: ${{ inputs.ref-zenml != '' }}
       shell: bash
       run: |
-        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }} wheel
+        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }} wheel --user
     
     - name: Install ZenML and wheel
       if: ${{ inputs.ref-zenml == '' }}
       shell: bash
       run: |
-        pip install --force --upgrade zenml wheel
+        pip install --force --upgrade zenml wheel --user
     
     - name: Concatenate requirements
       shell: bash
@@ -81,13 +81,13 @@ runs:
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        pip install -r ./local_checkout/all-requirements.txt
+        pip install -r ./local_checkout/all-requirements.txt --user
     
     - name: Reinstall ZenML after requirements
       if: ${{ inputs.ref-zenml != '' }}
       shell: bash
       run: |
-        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }}
+        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }} --user
 
     - name: Run pytests
       shell: bash

@@ -1,7 +1,8 @@
 # {% include 'template/license_header' %}
 
 
-from typing import Annotated, Tuple
+from typing import Tuple
+from typing_extensions import Annotated
 
 from config import MetaConfig
 from zenml import step

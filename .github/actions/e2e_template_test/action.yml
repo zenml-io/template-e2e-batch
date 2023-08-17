@@ -2,18 +2,28 @@ name: 'Run E2E template tests'
 inputs:
   stack-name:
     description: 'Name of ZenML stack to build (see `tests/conftest.py:configure_stack()`)'
+    type: string
     required: true
   os:
     description: 'Operating system to run tests on'
+    type: string
     required: true
   ref_zenml:
     description: 'Ref of ZenML package'
+    type: string
     required: false
     default: ''
   ref_template:
     description: 'Ref of this tempalte repo'
+    type: string
     required: false
     default: ''
+  python-version:
+    description: 'Python version'
+    type: string
+    required: false
+    default: '3.9'
+
 runs:
   using: "composite"
   steps:
@@ -27,7 +37,7 @@ runs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: ${{ inputs.python-version }}
     
     - name: Configure git (non-Windows)
       if: ${{ inputs.os != 'windows-latest' }}

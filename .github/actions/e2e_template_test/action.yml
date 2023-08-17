@@ -53,13 +53,14 @@ runs:
       if: ${{ inputs.ref-zenml != '' }}
       shell: bash
       run: |
-        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }} wheel
+        pip install --force --upgrade --install-option="--extras-require=server" git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }} && \
+        pip install wheel
     
     - name: Install ZenML and wheel
       if: ${{ inputs.ref-zenml == '' }}
       shell: bash
       run: |
-        pip install --upgrade zenml wheel
+        pip install --upgrade zenml[server] wheel
     
     - name: Concatenate requirements
       shell: bash

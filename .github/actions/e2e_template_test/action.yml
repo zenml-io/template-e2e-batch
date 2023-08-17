@@ -10,7 +10,7 @@ inputs:
     required: false
     default: ''
   ref-template:
-    description: 'Ref of this tempalte repo'
+    description: 'Ref of this template repo'
     type: string
     required: false
     default: ''

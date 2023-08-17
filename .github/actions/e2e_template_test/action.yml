@@ -4,16 +4,12 @@ inputs:
     description: 'Name of ZenML stack to build (see `tests/conftest.py:configure_stack()`)'
     type: string
     required: true
-  os:
-    description: 'Operating system to run tests on'
-    type: string
-    required: true
-  ref_zenml:
+  ref-zenml:
     description: 'Ref of ZenML package'
     type: string
     required: false
     default: ''
-  ref_template:
+  ref-template:
     description: 'Ref of this tempalte repo'
     type: string
     required: false
@@ -31,7 +27,7 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: zenml-io/template-e2e-batch
-        ref: ${{ inputs.ref_template }}
+        ref: ${{ inputs.ref-template }}
         path: ./local_checkout
 
     - name: Set up Python
@@ -40,27 +36,27 @@ runs:
         python-version: ${{ inputs.python-version }}
     
     - name: Configure git (non-Windows)
-      if: ${{ inputs.os != 'windows-latest' }}
+      if: ${{ runner.os != 'Windows' }}
       shell: bash
       run: |
         git config --global user.email "info@zenml.io"
         git config --global user.name "ZenML GmbH"
     
     - name: Configure git (Windows)
-      if: ${{ inputs.os == 'windows-latest' }}
+      if: ${{ runner.os == 'Windows' }}
       shell: bash
       run: |
         "C:\Program Files\Git\bin\git.exe" config --global user.email "info@zenml.io"
         "C:\Program Files\Git\bin\git.exe" config --global user.name "ZenML GmbH"
 
     - name: Install ZenML and wheel
-      if: ${{ inputs.ref_zenml != '' }}
+      if: ${{ inputs.ref-zenml != '' }}
       shell: bash
       run: |
-        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref_zenml }} wheel
+        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }} wheel
     
     - name: Install ZenML and wheel
-      if: ${{ inputs.ref_zenml == '' }}
+      if: ${{ inputs.ref-zenml == '' }}
       shell: bash
       run: |
         pip install --force --upgrade zenml wheel
@@ -88,10 +84,10 @@ runs:
         pip install -r ./local_checkout/all-requirements.txt
     
     - name: Reinstall ZenML after requirements
-      if: ${{ inputs.ref_zenml != '' }}
+      if: ${{ inputs.ref-zenml != '' }}
       shell: bash
       run: |
-        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref_zenml }}
+        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }}
 
     - name: Run pytests
       shell: bash

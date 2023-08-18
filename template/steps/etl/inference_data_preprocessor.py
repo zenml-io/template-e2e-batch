@@ -1,7 +1,7 @@
 # {% include 'template/license_header' %}
 
 
-from typing import Annotated
+from typing_extensions import Annotated
 
 import pandas as pd
 from sklearn.pipeline import Pipeline

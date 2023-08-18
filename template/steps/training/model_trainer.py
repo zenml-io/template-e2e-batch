@@ -1,7 +1,7 @@
 # {% include 'template/license_header' %}
 
 
-from typing import Annotated
+from typing_extensions import Annotated
 
 import mlflow
 import pandas as pd

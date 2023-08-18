@@ -2,74 +2,84 @@ name: 'Run E2E template tests'
 inputs:
   stack-name:
     description: 'Name of ZenML stack to build (see `tests/conftest.py:configure_stack()`)'
+    type: string
     required: true
-  os:
-    description: 'Operating system to run tests on'
-    required: true
+  ref-zenml:
+    description: 'Ref of ZenML package'
+    type: string
+    required: false
+    default: ''
+  ref-template:
+    description: 'Ref of this template repo'
+    type: string
+    required: false
+    default: ''
+  python-version:
+    description: 'Python version'
+    type: string
+    required: false
+    default: '3.9'
+
 runs:
   using: "composite"
   steps:
     - name: Check out repository code
       uses: actions/checkout@v3
+      with:
+        repository: zenml-io/template-e2e-batch
+        ref: ${{ inputs.ref-template }}
+        path: ./local_checkout
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: ${{ inputs.python-version }}
     
     - name: Configure git (non-Windows)
-      if: ${{ inputs.os != 'windows-latest' }}
+      if: ${{ runner.os != 'Windows' }}
       shell: bash
       run: |
         git config --global user.email "info@zenml.io"
         git config --global user.name "ZenML GmbH"
     
     - name: Configure git (Windows)
-      if: ${{ inputs.os == 'windows-latest' }}
+      if: ${{ runner.os == 'Windows' }}
       shell: bash
       run: |
         "C:\Program Files\Git\bin\git.exe" config --global user.email "info@zenml.io"
         "C:\Program Files\Git\bin\git.exe" config --global user.name "ZenML GmbH"
 
-    # e2e example was not released yet, so relies on some recent develop changes
-    # TODO: replace with normal install after #1715, #1711, #1707 and #1703 are released
-    - name: Install ZenML and wheel
+    - name: Install  wheel
       shell: bash
       run: |
-        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@develop wheel
+        pip install wheel
+    
+    - name: Install ZenML
+      if: ${{ inputs.ref-zenml != '' }}
+      shell: bash
+      run: |
+        pip install "git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }}" "zenml[server]@git+https://github.com/zenml-io/zenml.git@${{ inputs.ref-zenml }}"
+    
+    - name: Install ZenML
+      if: ${{ inputs.ref-zenml == '' }}
+      shell: bash
+      run: |
+        pip install zenml "zenml[server]"
     
     - name: Concatenate requirements
       shell: bash
       run: |
-        zenml integration export-requirements -o integration-requirements.txt sklearn mlflow s3 kubernetes kubeflow slack evidently
-        cat requirements.txt test-requirements.txt template/requirements.txt integration-requirements.txt >> all-requirements.txt
+        zenml integration export-requirements -o ./local_checkout/integration-requirements.txt sklearn mlflow s3 kubernetes kubeflow slack evidently
+        cat ./local_checkout/requirements.txt ./local_checkout/test-requirements.txt ./local_checkout/integration-requirements.txt >> ./local_checkout/all-requirements.txt
 
-    - uses: syphar/restore-virtualenv@v1
-      id: cache-virtualenv
-      with:
-        requirement_files: all-requirements.txt
-
-    - uses: syphar/restore-pip-download-cache@v1
-      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
-      with:
-        requirement_files: all-requirements.txt
-        
     - name: Install requirements
-      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        pip install -r all-requirements.txt
-    
-    # e2e example was not released yet, so relies on some recent develop changes
-    # TODO: remove step after #1715, #1711, #1707 and #1703 are released
-    - name: Reinstall ZenML after requirements
-      shell: bash
-      run: |
-        pip install --force --upgrade git+https://github.com/zenml-io/zenml.git@develop
+        pip install -r ./local_checkout/all-requirements.txt
 
     - name: Run pytests
       shell: bash
       env:
         ZENML_STACK_NAME: ${{ inputs.stack-name }}
       run: |
-        pytest tests
+        pytest ./local_checkout/tests

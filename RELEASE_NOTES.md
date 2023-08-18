@@ -1,5 +1,16 @@
 <!-- markdown-link-check-disable -->
 
+# 0.43.0
+
+## What's Changed
+* Fix broken links to documentation by @Taytay in https://github.com/zenml-io/template-e2e-batch/pull/4
+* Add remote testing on the given ref by @avishniakov in https://github.com/zenml-io/template-e2e-batch/pull/3
+
+## New Contributors
+* @Taytay made their first contribution in https://github.com/zenml-io/template-e2e-batch/pull/4
+
+**Full Changelog**: https://github.com/zenml-io/template-e2e-batch/compare/0.42.1...0.43.0
+
 # 0.42.1
 
 This is the first release of E2E project template. It includes reworked

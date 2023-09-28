@@ -35,4 +35,3 @@ jobs:
         with:
           stack-name: ${{ matrix.stack-name }}
           python-version: ${{ matrix.python-version }}
-          ref-zenml: bugfix/OSS-2475-fix-mlflow-registry

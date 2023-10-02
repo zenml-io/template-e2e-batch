@@ -35,3 +35,4 @@ jobs:
         with:
           stack-name: ${{ matrix.stack-name }}
           python-version: ${{ matrix.python-version }}
+          zenml-ref: feature/OSS-2424-extend-external-artifact

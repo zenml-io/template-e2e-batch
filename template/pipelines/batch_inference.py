@@ -20,7 +20,7 @@ from zenml.integrations.mlflow.steps.mlflow_deployer import (
     mlflow_model_registry_deployer_step,
 )
 from zenml.logger import get_logger
-from zenml.steps.external_artifact import ExternalArtifact
+from zenml.artifacts.external_artifact import ExternalArtifact
 
 logger = get_logger(__name__)
 

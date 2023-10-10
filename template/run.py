@@ -1,7 +1,7 @@
 # {% include 'template/license_header' %}
 
 
-from zenml.steps.external_artifact import ExternalArtifact
+from zenml.artifacts.external_artifact import ExternalArtifact
 from zenml.logger import get_logger
 from pipelines import {{product_name}}_batch_inference, {{product_name}}_training
 from config import MetaConfig
@@ -177,7 +177,7 @@ def main(
     logger.info(
         "Batch inference pipeline finished successfully! "
         "You can find predictions in Artifact Store using ID: "
-        f"`{str(artifact.upload_if_necessary())}`."
+        f"`{str(artifact.id)}`."
     )
 
 

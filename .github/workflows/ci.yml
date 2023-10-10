@@ -35,4 +35,4 @@ jobs:
         with:
           stack-name: ${{ matrix.stack-name }}
           python-version: ${{ matrix.python-version }}
-          ref-zenml: feature/OSS-2300-model-watch-tower-v0.1
+          ref-zenml: develop

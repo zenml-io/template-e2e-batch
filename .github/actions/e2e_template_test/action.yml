@@ -83,3 +83,8 @@ runs:
         ZENML_STACK_NAME: ${{ inputs.stack-name }}
       run: |
         pytest ./local_checkout/tests
+
+    - name: Clean-up
+      shell: bash
+      run: |
+        rm -rf ./local_checkout

@@ -9,7 +9,7 @@ setup: remote-login
 setup:
 {%- endif %}
 	pip install -r requirements.txt
-	zenml integration install sklearn mlflow s3 kubernetes kubeflow slack evidently -y
+	zenml integration install sklearn mlflow slack evidently -y
 
 install-stack:
 	@echo "Specify stack name [$(stack_name)]: " && read input && [ -n "$$input" ] && stack_name="$$input" || stack_name="$(stack_name)" && \

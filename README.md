@@ -209,7 +209,7 @@ df_inference, target = data_loader(is_inference=True)
 df_inference = inference_data_preprocessor(
     dataset_inf=df_inference,
     preprocess_pipeline=ExternalArtifact(
-        pipeline_name=MetaConfig.pipeline_name_training,
+        pipeline_name="your_product_name_training",
         artifact_name="preprocess_pipeline",
     ),
     target=target,

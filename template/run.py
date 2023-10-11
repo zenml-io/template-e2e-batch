@@ -1,13 +1,14 @@
 # {% include 'template/license_header' %}
 
+import click
+from datetime import datetime as dt
+import os
+from typing import Optional
 
 from zenml.artifacts.external_artifact import ExternalArtifact
 from zenml.logger import get_logger
+
 from pipelines import {{product_name}}_batch_inference, {{product_name}}_training
-from config import MetaConfig
-import click
-from typing import Optional
-from datetime import datetime as dt
 
 logger = get_logger(__name__)
 
@@ -139,7 +140,12 @@ def main(
     # Run a pipeline with the required parameters. This executes
     # all steps in the pipeline in the correct order using the orchestrator
     # stack component that is configured in your active ZenML stack.
-    pipeline_args = {}
+    pipeline_args = {
+        "config_path":os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            "config.yaml",
+            )
+        }
     if no_cache:
         pipeline_args["enable_cache"] = False
 
@@ -159,7 +165,7 @@ def main(
 
         pipeline_args[
             "run_name"
-        ] = f"{MetaConfig.pipeline_name_training}_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
+        ] = f"{{product_name}}_training_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
         {{product_name}}_training.with_options(**pipeline_args)(**run_args_train)
         logger.info("Training pipeline finished successfully!")
 
@@ -167,17 +173,17 @@ def main(
     run_args_inference = {}
     pipeline_args[
         "run_name"
-    ] = f"{MetaConfig.pipeline_name_batch_inference}_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
+    ] = f"{{product_name}}_batch_inference_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
     {{product_name}}_batch_inference.with_options(**pipeline_args)(**run_args_inference)
 
     artifact = ExternalArtifact(
-        pipeline_name=MetaConfig.pipeline_name_batch_inference,
+        pipeline_name="{{product_name}}_batch_inference",
         artifact_name="predictions",
     )
     logger.info(
         "Batch inference pipeline finished successfully! "
         "You can find predictions in Artifact Store using ID: "
-        f"`{str(artifact.id)}`."
+        f"`{str(artifact.get_artifact_id())}`."
     )
 
 

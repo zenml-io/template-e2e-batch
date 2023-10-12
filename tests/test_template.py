@@ -92,7 +92,7 @@ def generate_and_run_project(
         except subprocess.CalledProcessError as e:
             raise RuntimeError(
                 f"Failed to run project generated with parameters: {answers}\n"
-                f"{e.output}"
+                f"{e.output.decode()}"
             ) from e
 
         # check the pipeline run is successful

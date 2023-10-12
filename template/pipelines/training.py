@@ -150,6 +150,7 @@ def {{product_name}}_training(
         registry_model_name=pipeline_extra["mlflow_model_name"],
         registry_model_version=latest_version,
         replace_existing=False,
+        timeout=180,
     )
     latest_metric = promote_get_metric(
         id="get_metrics_latest_model_version",
@@ -162,6 +163,7 @@ def {{product_name}}_training(
         registry_model_name=pipeline_extra["mlflow_model_name"],
         registry_model_version=current_version,
         replace_existing=False,
+        timeout=180,
         after=["get_metrics_latest_model_version"],
     )
     current_metric = promote_get_metric(

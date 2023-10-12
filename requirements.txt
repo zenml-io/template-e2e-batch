@@ -1,2 +1,1 @@
-copier
-jinja2-time
+zenml[templates]

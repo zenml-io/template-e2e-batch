@@ -66,8 +66,7 @@ def {{product_name}}_batch_inference():
     deployment_service = mlflow_model_registry_deployer_step(
         registry_model_name=get_pipeline_context().extra["mlflow_model_name"],
         registry_model_version=registry_model_version,
-        replace_existing=False,
-        timeout=180,
+        replace_existing=True,
     )
     inference_predict(
         deployment_service=deployment_service,

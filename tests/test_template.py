@@ -17,6 +17,7 @@ import os
 import pathlib
 import platform
 import shutil
+import subprocess
 import sys
 from typing import Optional
 
@@ -73,17 +74,27 @@ def generate_and_run_project(
         dst_path=str(dst_path),
         data=answers,
         unsafe=True,
-        vcs_ref="HEAD",
     ) as worker:
         worker.run_copy()
     
     # MLFlow Deployer not supported on Windows
-    if platform.system().lower()!="windows":
+    # MLFlow `service daemon is not running` error on MacOS
+    if platform.system().lower() not in ["windows", "macos"]:
         # run the project
-        sys.path.append(os.curdir)
-        from run import main
+        call = [sys.executable, "run.py"]
 
-        main()
+        try:
+            subprocess.check_output(
+                call,
+                cwd=str(dst_path),
+                env=os.environ.copy(),
+                stderr=subprocess.STDOUT,
+            )
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(
+                f"Failed to run project generated with parameters: {answers}\n"
+                f"{e.output.decode()}"
+            ) from e
 
         # check the pipeline run is successful
         for pipeline_suffix in ["_training", "_batch_inference"]:

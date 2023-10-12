@@ -83,14 +83,15 @@ def generate_and_run_project(
         call = [sys.executable, "run.py"]
 
         try:
-            subprocess.check_call(
+            output = subprocess.check_output(
                 call,
                 cwd=str(dst_path),
                 env=os.environ.copy(),
             )
         except Exception as e:
             raise RuntimeError(
-                f"Failed to run project generated with parameters: {answers}"
+                f"Failed to run project generated with parameters: {answers}\n"
+                f"{output}"
             ) from e
 
         # check the pipeline run is successful

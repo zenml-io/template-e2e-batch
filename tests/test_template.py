@@ -79,7 +79,7 @@ def generate_and_run_project(
     
     # MLFlow Deployer not supported on Windows
     # MLFlow `service daemon is not running` error on MacOS
-    if platform.system().lower() not in ["windows", "macos"]:
+    if platform.system().lower() not in ["windows", "macos", "darwin"]:
         # run the project
         call = [sys.executable, "run.py"]
 

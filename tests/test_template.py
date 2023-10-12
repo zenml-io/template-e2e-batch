@@ -87,6 +87,7 @@ def generate_and_run_project(
                 call,
                 cwd=str(dst_path),
                 env=os.environ.copy(),
+                stderr=subprocess.STDOUT,
             )
         except Exception as e:
             raise RuntimeError(

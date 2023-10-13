@@ -33,4 +33,3 @@ def drift_quality_gate(report: str, na_drift_tolerance: float = 0.1) -> None:
             "Number of NA values in scoring dataset is significantly different compared to train dataset."
         )
     ### YOUR CODE ENDS HERE ###
-    

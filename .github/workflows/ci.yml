@@ -36,4 +36,4 @@ jobs:
         with:
           stack-name: ${{ matrix.stack-name }}
           python-version: ${{ matrix.python-version }}
-          ref-zenml: feature/OSS-2494-evaluate-config-early
+          ref-zenml: develop

@@ -10,6 +10,7 @@ from zenml import step
 from zenml.client import Client
 from zenml.integrations.mlflow.experiment_trackers import MLFlowExperimentTracker
 from zenml.logger import get_logger
+from zenml.model import ModelArtifactConfig
 
 logger = get_logger(__name__)
 
@@ -29,8 +30,7 @@ def model_trainer(
     dataset_trn: pd.DataFrame,
     model: ClassifierMixin,
     target: str,
-    random_seed: int = 42,
-) -> Annotated[ClassifierMixin, "model"]:
+) -> Annotated[ClassifierMixin, "model", ModelArtifactConfig()]:
     """Configure and train a model on the training dataset.
 
     This is an example of a model training step that takes in a dataset artifact
@@ -56,7 +56,6 @@ def model_trainer(
         dataset_trn: The preprocessed train dataset.
         model: The model instance to train.
         target: Name of target columns in dataset.
-        random_seed: Fixed seed of random generator.
 
     Returns:
         The trained model artifact.

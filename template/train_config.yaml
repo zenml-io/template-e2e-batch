@@ -76,3 +76,21 @@ extra:
       max_depth: 5
       min_samples_leaf: 3
 {%- endif %}
+model_config:
+  name: {{ product_name }}
+  license: {{ open_source_license }}
+  description: {{ product_name }} E2E Batch Use Case
+  audience: All ZenML users
+  use_cases: |
+    The {{project_name}} project demonstrates how the most important steps of 
+    the ML Production Lifecycle can be implemented in a reusable way remaining 
+    agnostic to the underlying infrastructure, and how to integrate them together 
+    into pipelines serving Training and Batch Inference purposes.
+  ethics: No impact.
+  tags:
+  - e2e
+  - batch
+  - sklearn
+  - from template
+  - ZenML delivered
+  create_new_model_version: true

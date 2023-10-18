@@ -1,0 +1,26 @@
+# {% include 'template/license_header' %}
+
+settings:
+  docker:
+    requirements:
+      - aws
+{%- if data_quality_checks %}
+      - evidently
+{%- endif %}
+      - kubeflow
+      - kubernetes
+      - mlflow
+      - sklearn
+      - slack
+extra:
+  mlflow_model_name: e2e_use_case_model
+{%- if target_environment == 'production' %}
+  target_env: Production
+{%- else %}
+  target_env: Staging
+{%- endif %}
+  notify_on_success: False
+  notify_on_failure: True
+model_config:
+  name: {{ product_name }}
+  version: {{ target_environment }}

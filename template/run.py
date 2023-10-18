@@ -140,12 +140,7 @@ def main(
     # Run a pipeline with the required parameters. This executes
     # all steps in the pipeline in the correct order using the orchestrator
     # stack component that is configured in your active ZenML stack.
-    pipeline_args = {
-        "config_path":os.path.join(
-            os.path.dirname(os.path.realpath(__file__)),
-            "config.yaml",
-            )
-        }
+    pipeline_args = {}
     if no_cache:
         pipeline_args["enable_cache"] = False
 
@@ -154,7 +149,6 @@ def main(
         run_args_train = {
             "drop_na": not no_drop_na,
             "normalize": not no_normalize,
-            "random_seed": 42,
             "test_size": test_size,
             "min_train_accuracy": min_train_accuracy,
             "min_test_accuracy": min_test_accuracy,
@@ -163,6 +157,10 @@ def main(
         if drop_columns:
             run_args_train["drop_columns"] = drop_columns.split(",")
 
+        pipeline_args["config_path"] = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            "train_config.yaml",
+        )
         pipeline_args[
             "run_name"
         ] = f"{{product_name}}_training_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
@@ -171,14 +169,20 @@ def main(
 
     # Execute Batch Inference Pipeline
     run_args_inference = {}
+    pipeline_args["config_path"] = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        "inference_config.yaml",
+    )
     pipeline_args[
         "run_name"
     ] = f"{{product_name}}_batch_inference_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
     {{product_name}}_batch_inference.with_options(**pipeline_args)(**run_args_inference)
 
     artifact = ExternalArtifact(
-        pipeline_name="{{product_name}}_batch_inference",
-        artifact_name="predictions",
+        model_artifact_name="predictions",
+        model_name="{{ product_name }}",
+        model_version="{{ target_environment }}", 
+        model_artifact_version=None, # can be skipped - using latest artifact link
     )
     logger.info(
         "Batch inference pipeline finished successfully! "

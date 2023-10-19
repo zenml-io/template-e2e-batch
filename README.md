@@ -6,23 +6,25 @@ to cover major use cases of ZenML: a collection of steps and pipelines and,
 to top it all off, a simple but useful CLI. This is exactly
 what the ZenML templates are all about.
 
-This project template is a good starting point for anyone starting with ZenML.
-It consists of two pipelines with the following high-level steps:
+This project template is a great starting point for anyone looking to deepen their knowledge of ZenML.
+It consists of two pipelines with the following high-level setup:
 <p align="center">
   <img height=300 src="template/.assets/00_pipelines_composition.png">
 </p>
 
+Both pipelines are inside a shared Model Control Plane model context - training pipeline creates and promotes new Model Control Plane version and inference pipeline is reading from inference Model Control Plane version. This makes those pipelines closely connected, while ensuring that only quality assured Model Control Plane versions are used to produce predictions delivered to stakeholders.
 * [CT] Training
   * Load, split, and preprocess the training dataset
-  * Search for an optimal model architecture and tune its hyperparameters
-  * Train the model and evaluate its performance on the holdout set
-  * Compare a recently trained model with one used for inference and trained earlier
-  * If a recently trained model - label it as a new inference model
+  * Search for an optimal model object architecture and tune its hyperparameters
+  * Train the model object and evaluate its performance on the holdout set
+  * Compare a recently trained model object with one promoted earlier
+  * If a recently trained model object performs better - stage it as a new inference model object in model registry
+  * On success of the current model object - stage newly created Model Control Plane version as the one used for inference
 * [CD] Batch Inference
-  * Load the inference dataset and preprocess it in the same fashion as during the training
-  * Perform data drift analysis
-  * Run predictions using a model labeled as an inference model
-  * Store predictions as an artifact for future use
+  * Load the inference dataset and preprocess it reusing object fitted during training
+  * Perform data drift analysis reusing training dataset of the inference Model Control Plane version as a reference
+  * Run predictions using a model object from the inference Model Control Plane version
+  * Store predictions as an versioned artifact and link it to the inference Model Control Plane version
 
 It showcases the core ZenML concepts for supervised ML with batch predictions:
 
@@ -32,8 +34,7 @@ It showcases the core ZenML concepts for supervised ML with batch predictions:
 to design flexible and reusable steps
 * using [custom data types for your artifacts and writing materializers for them](https://docs.zenml.io/user-guide/advanced-guide/artifact-management/handle-custom-data-types)
 * constructing and running a [ZenML pipeline](https://docs.zenml.io/user-guide/starter-guide/create-an-ml-pipeline)
-* accessing ZenML pipeline run artifacts in [the post-execution phase](https://docs.zenml.io/user-guide/starter-guide/fetch-runs-after-execution)
-after a pipeline run has concluded
+* TODO: add Model Control Plane docs
 * best practices for implementing and running reproducible and reliable ML
 pipelines with ZenML
 
@@ -87,6 +88,16 @@ zenml init --template <short_name_of_template> --template-with-defaults
 
 We will be going section by section diving into implementation details and sharing tips and best practices along this journey.
 
+### [Continuous Training] Training Pipeline
+Training pipeline is designed to create a new Model Control Plane version and promote it to inference stage upon successful quality assurance at the end of the pipeline. This ensures that we always infer only on quality assured Model Control Plane version and provides a seamless integration of required artifacts of this Model Control Plane version later on inference runs.
+This is achieved by providing this configuration in `train_config.yaml` used to configure our pipeline:
+```yaml
+model_config:
+  name: your_product_name
+  ...
+  create_new_model_version: true
+```
+
 ### [Continuous Training] Training Pipeline: ETL steps
 
 [📂 Code folder](template/steps/etl/)
@@ -113,20 +124,6 @@ To create parallel processing of computationally expensive operations we use a l
 
 You can find more information about the current state of [Hyperparameter Tuning using ZenML in the documentation](https://docs.zenml.io/user-guide/advanced-guide/pipelining-features/hyper-parameter-tuning).
 
-Another important concept introduced at this stage is [Custom Materializers](https://docs.zenml.io/user-guide/advanced-guide/artifact-management/handle-custom-data-types#custom-materializers): `hp_tuning_single_search` produce an output containing best parameters as a normal python dictionary and model architecture as a sklearn model class. Implementation of `ModelInfoMaterializer` is [here](template/artifacts/materializer.py).
-
-Later on, this materializer class is passed into steps to create such an output explicitly.
-<details>
-  <summary>Code snippet 💻</summary>
-
-```python
-@step(output_materializers=ModelInfoMaterializer)
-def hp_tuning_select_best_model(
-    search_steps_prefix: str,
-) -> Annotated[Dict[str, Any], "best_model"]:
-  ...
-```
-</details>
 
 
 ### [Continuous Training] Training Pipeline: Model training and evaluation
@@ -136,22 +133,25 @@ def hp_tuning_select_best_model(
   <img height=500 src="assets/03_train.png">
 </p>
 
-Having the best model architecture and its hyperparameters defined in the previous stage makes it possible to train a quality model. Also, model training is the right place to bring an [Experiment Tracker](https://docs.zenml.io/stacks-and-components/component-guide/experiment-trackers) into the picture - we will log all metrics and model itself into the [Experiment Tracker](https://docs.zenml.io/stacks-and-components/component-guide/experiment-trackers), so we can register our model in a [Model Registry](https://docs.zenml.io/stacks-and-components/component-guide/model-registries) and pass it down to a [Model Deployer](https://docs.zenml.io/stacks-and-components/component-guide/model-deployers) easily and traceable. We will use information from Active Stack to make implementation agnostic of the underlying infrastructure.
+Having the best model architecture and its hyperparameters defined in the previous stage makes it possible to train a quality model object. Also, model training is the right place to bring an [Experiment Tracker](https://docs.zenml.io/stacks-and-components/component-guide/experiment-trackers) into the picture - we will log all metrics and model object itself into the [Experiment Tracker](https://docs.zenml.io/stacks-and-components/component-guide/experiment-trackers), so we can register our model object in a [Model Registry](https://docs.zenml.io/stacks-and-components/component-guide/model-registries) and pass it down to a [Model Deployer](https://docs.zenml.io/stacks-and-components/component-guide/model-deployers) easily and traceable. We will use information from Active Stack to make implementation agnostic of the underlying infrastructure.
+To make the most out of the Model Control Plane we additionally annotate output model object as a Model Artifact, by doing so it will be properly categorized for future use and get additional model object specific features.
 <details>
   <summary>Code snippet 💻</summary>
 
 ```python
+from zenml.model import ModelArtifactConfig
+
 experiment_tracker = Client().active_stack.experiment_tracker
 @step(experiment_tracker=experiment_tracker.name)
 def model_trainer(
     ...
-) -> Annotated[ClassifierMixin, "model"]:
+) -> Annotated[ClassifierMixin, "model", ModelArtifactConfig()]:
   ...
 ```
 </details>
-Even knowing that the hyperparameter tuning step happened we would like to ensure that our model meets at least minimal quality standards - this quality gate is on the evaluation step. In case the model is of low-quality metric-wise an Exception will be raised and the pipeline will stop.
+Even knowing that the hyperparameter tuning step happened we would like to ensure that our model object meets at least minimal quality standards - this quality gate is on the evaluation step. In case the model object is of low-quality metric-wise an Exception will be raised and the pipeline will stop.
 
-To notify maintainers of our Data Product about failures or successful completion of a pipeline we use [Alerter](https://docs.zenml.io/stacks-and-components/component-guide/alerters) of the active stack. For failures it is convenient to use pipeline hook `on_failure` and for successes, a step notifying about it added as a last step of the pipeline comes in handy.
+To notify maintainers of our Model Control Plane model about failures or successful completion of a pipeline we use [Alerter](https://docs.zenml.io/stacks-and-components/component-guide/alerters) of the active stack. For failures it is convenient to use pipeline hook `on_failure` and for successes, a step notifying about it added as a last step of the pipeline comes in handy.
 <details>
   <summary>Code snippet 💻</summary>
 
@@ -168,26 +168,35 @@ def notify_on_success() -> None:
 @pipeline(on_failure=notify_on_failure)
 def e2e_example_training(...):
   ...
-  promote_metric_compare_promoter(...)
-  notify_on_success(after=["promote_metric_compare_promoter"])
+  promote_metric_compare_promoter_in_model_registry(...)
+  notify_on_success(after=["promote_metric_compare_promoter_in_model_registry"])
 ```
 </details>
 
 
-### [Continuous Training] Training Pipeline: Model promotion
+### [Continuous Training] Training Pipeline: Model Control Plane version promotion
 
 [📂 Code folder](template/steps/promotion/)
 <p align="center">
   <img height=500 src="assets/04_promotion.png">
 </p>
 
-Once the model is trained and evaluated on meeting basic quality standards, we would like to understand whether it is good enough to beat the existing model used in production. This is a very important step, as promoting a weak model in production might result in huge losses at the end of the day.
+Once the model object is trained and evaluated on meeting basic quality standards, we would like to understand whether it is good enough to beat the existing model object used in inference. This is a very important step, as promoting a weak model object as inference might result in huge negative impact at the end of the day.
 
-In this example, we are implementing metric compare promotion to decide on the spot and avoid more complex approaches like Champion/Challengers shadow deployments. In other projects, other promotion techniques and strategies can vary.
+In this example, we are implementing metric compare promotion to decide on the spot and avoid more complex approaches like Champion/Challengers shadow deployments. In other projects, other promotion techniques and strategies can be used.
 
-To achieve this we would retrieve the model version from [Model Registry](https://docs.zenml.io/stacks-and-components/component-guide/model-registries): latest (the one we just trained) and current (the one having a proper tag). Next, we need to deploy both models using [Model Deployer](https://docs.zenml.io/stacks-and-components/component-guide/model-deployers) and run predictions on the testing set for both of them. Next, we select which one of the model versions has a better metric value and associate it with the inference tag. By doing so we ensure that the best model version would be used for inference later on.
+To achieve this we would retrieve the model registry version from [Model Registry](https://docs.zenml.io/stacks-and-components/component-guide/model-registries): latest (the one we just trained) and current (the one having a proper tag). Next, we need to deploy both model objects using [Model Deployer](https://docs.zenml.io/stacks-and-components/component-guide/model-deployers) and run predictions on the testing set for both of them. Next, we select which one of the model registry versions has a better metric value and associate it with the inference tag.
+
+As a last step we promote current Model Control Plane version to inference stage, if promotion decision was made.By doing so we ensure that the best Model Control Plane version would be used for inference later on and ensure seamless integration of relevant artifacts from training pipeline in batch inference pipeline.
 
 ### [Continuous Deployment] Batch Inference
+Batch Inference pipeline is designed to run with inference Model Control Plane version context. This ensures that we always infer only on quality assured Model Control Plane version and provide seamless integration of required artifacts created during training of this Model Control Plane version.
+This is achieved by providing this configuration in `inference_config.yaml` used to configure our pipeline:
+```yaml
+model_config:
+  name: your_product_name
+  version: production
+```
 
 <p align="center">
   <img height=500 src="assets/05_batch_inference.png">
@@ -199,7 +208,7 @@ To achieve this we would retrieve the model version from [Model Registry](https:
 
 The process of loading data is similar to training, even the same step function is used, but with the `is_inference` flag.
 
-But inference flow has an important difference - there is no need to fit preprocessing `Pipeline`, rather we need to reuse one fitted during training on the train set, to ensure that model gets the expected input. To do so we will use [ExternalArtifact](https://docs.zenml.io/user-guide/advanced-guide/pipelining-features/configure-steps-pipelines#pass-any-kind-of-data-to-your-steps) with lookup by `pipeline_name` and `artifact_name` - it will return ensure that required artifact is properly passed in inference preprocessing.
+But inference flow has an important difference - there is no need to fit preprocessing `Pipeline`, rather we need to reuse one fitted during training on the train set, to ensure that the model object gets the expected input. To do so we will use [ExternalArtifact](https://docs.zenml.io/user-guide/advanced-guide/pipelining-features/configure-steps-pipelines#pass-any-kind-of-data-to-your-steps) with lookup by `model_artifact_name` only to get the preprocessing pipeline fitted during quality assured training run. This is possible, since we configured batch inference pipeline to run inside a Model Control Plane version context.
 <details>
   <summary>Code snippet 💻</summary>
 
@@ -209,9 +218,8 @@ df_inference, target = data_loader(is_inference=True)
 df_inference = inference_data_preprocessor(
     dataset_inf=df_inference,
     preprocess_pipeline=ExternalArtifact(
-        pipeline_name="your_product_name_training",
-        artifact_name="preprocess_pipeline",
-    ),
+      model_artifact_name="preprocess_pipeline",
+    ), # this fetches artifact using Model Control Plane
     target=target,
 )
 ```
@@ -224,7 +232,9 @@ df_inference = inference_data_preprocessor(
 
 On the drift reporting stage we will use [standard step](https://docs.zenml.io/stacks-and-components/component-guide/data-validators/evidently#the-evidently-data-validator) `evidently_report_step` to build Evidently report to assess certain data quality metrics. `evidently_report_step` has a number of options, but for this example, we will build only `DataQualityPreset` metrics preset to get a number of NA values in reference and current datasets.
 
-After the report is built we execute another quality gate using the `drift_na_count` step, which assesses if a significant drift in NA count is observed. If so, execution is stopped with an exception.
+We pass `dataset_trn` from training pipeline as a `reference_dataset` here, to do so we will use [ExternalArtifact](https://docs.zenml.io/user-guide/advanced-guide/pipelining-features/configure-steps-pipelines#pass-any-kind-of-data-to-your-steps) with lookup by `model_artifact_name` only to get the training dataset used during quality assured training run. This is possible, since we configured batch inference pipeline to run inside a Model Control Plane version context.
+
+After the report is built we execute another quality gate using the `drift_quality_gate` step, which assesses if a significant drift in NA count is observed. If so, execution is stopped with an exception.
 
 You can follow [Data Validators docs](https://docs.zenml.io/stacks-and-components/component-guide/data-validators) to get more inspiration on how and when to use drift detection in your pipelines.
 
@@ -234,18 +244,20 @@ You can follow [Data Validators docs](https://docs.zenml.io/stacks-and-component
 
 As a last step concluding all work done so far, we will calculate predictions on the inference dataset and persist them in [Artifact Store](https://docs.zenml.io/stacks-and-components/component-guide/artifact-stores) for reuse.
 
-As we performed promotion as part of the training pipeline it is very easy to fetch the needed model version from [Model Registry](https://docs.zenml.io/stacks-and-components/component-guide/model-registries) and deploy it for inference with [Model Deployer](https://docs.zenml.io/stacks-and-components/component-guide/model-deployers).
+As we performed promotion as part of the training pipeline it is very easy to fetch the needed model registry version from [Model Registry](https://docs.zenml.io/stacks-and-components/component-guide/model-registries) and deploy it for inference with [Model Deployer](https://docs.zenml.io/stacks-and-components/component-guide/model-deployers).
 
-Once the model version is deployed the only thing left over is to call `.predict()` on the deployment service object and put those predictions as an output of the predictions step, so it is automatically stored in [Artifact Store](https://docs.zenml.io/stacks-and-components/component-guide/artifact-stores) with zero effort.
+Once the model registry version is deployed the only thing left over is to call `.predict()` on the deployment service object and put those predictions as an output of the predictions step, so it is automatically stored in [Artifact Store](https://docs.zenml.io/stacks-and-components/component-guide/artifact-stores) with zero effort. We additionally annotated `predictions` output with `ArtifactConfig(overwrite=False)` to ensure that this artifact will get linked to a Model Control Plane version in a versioned fashion - this is required to deliver all history to stakeholders since Batch Inference can be executed using same Model Control Plane version multiple times.
 <details>
   <summary>Code snippet 💻</summary>
 
 ```python
+from zenml.model import ArtifactConfig
+
 @step
 def inference_predict(
     deployment_service: MLFlowDeploymentService,
     dataset_inf: pd.DataFrame,
-) -> Annotated[pd.Series, "predictions"]:
+) -> Annotated[pd.Series, "predictions", ArtifactConfig(overwrite=False)]:
     predictions = deployment_service.predict(request=dataset_inf)
     predictions = pd.Series(predictions, name="predicted")
     return predictions

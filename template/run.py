@@ -140,12 +140,7 @@ def main(
     # Run a pipeline with the required parameters. This executes
     # all steps in the pipeline in the correct order using the orchestrator
     # stack component that is configured in your active ZenML stack.
-    pipeline_args = {
-        "config_path":os.path.join(
-            os.path.dirname(os.path.realpath(__file__)),
-            "config.yaml",
-            )
-        }
+    pipeline_args = {}
     if no_cache:
         pipeline_args["enable_cache"] = False
 

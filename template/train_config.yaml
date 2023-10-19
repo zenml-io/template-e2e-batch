@@ -13,7 +13,7 @@ settings:
       - sklearn
       - slack
 extra:
-  mlflow_model_name: e2e_use_case_model
+  mlflow_model_name: {{ product_name }}
 {%- if target_environment == 'production' %}
   target_env: Production
 {%- else %}

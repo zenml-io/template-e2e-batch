@@ -39,7 +39,9 @@ def {{product_name}}_batch_inference():
     df_inference, target = data_loader(is_inference=True)
     df_inference = inference_data_preprocessor(
         dataset_inf=df_inference,
-        preprocess_pipeline=ExternalArtifact(model_artifact_name="preprocess_pipeline"),
+        preprocess_pipeline=ExternalArtifact(
+            model_artifact_name="preprocess_pipeline",
+        ),
         target=target,
     )
 

@@ -72,6 +72,7 @@ def generate_and_run_project(
         dst_path=str(dst_path),
         data=answers,
         unsafe=True,
+        vcs_ref="HEAD",
     ) as worker:
         worker.run_copy()
 
@@ -104,6 +105,8 @@ def generate_and_run_project(
 
             # clean up
             Client().delete_pipeline(product_name + pipeline_suffix)
+        Client().delete_model(product_name)
+        Client().active_stack.model_registry.delete_model(product_name)
 
     os.chdir(current_dir)
     shutil.rmtree(dst_path)

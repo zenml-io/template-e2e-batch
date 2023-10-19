@@ -78,19 +78,22 @@ def generate_and_run_project(
         worker.run_copy()
     
     # MLFlow Deployer not supported on Windows
-    if platform.system().lower()!="windows":
+    # MLFlow `service daemon is not running` error on MacOS
+    if platform.system().lower() not in ["windows", "macos", "darwin"]:
         # run the project
         call = [sys.executable, "run.py"]
 
         try:
-            subprocess.check_call(
+            subprocess.check_output(
                 call,
                 cwd=str(dst_path),
                 env=os.environ.copy(),
+                stderr=subprocess.STDOUT,
             )
-        except Exception as e:
+        except subprocess.CalledProcessError as e:
             raise RuntimeError(
-                f"Failed to run project generated with parameters: {answers}"
+                f"Failed to run project generated with parameters: {answers}\n"
+                f"{e.output.decode()}"
             ) from e
 
         # check the pipeline run is successful

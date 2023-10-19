@@ -1,12 +1,10 @@
 # {% include 'template/license_header' %}
 
 
-from zenml import step
+from zenml import get_step_context, step
 from zenml.client import Client
 from zenml.logger import get_logger
 from zenml.model_registries.base_model_registry import ModelVersionStage
-
-from config import MetaConfig
 
 logger = get_logger(__name__)
 
@@ -28,22 +26,23 @@ def promote_latest(latest_version:str, current_version:str):
 
     ### ADD YOUR OWN CODE HERE - THIS IS JUST AN EXAMPLE ###
     logger.info(f"Promoting latest model version `{latest_version}`")
+    pipeline_extra = get_step_context().pipeline_run.config.extra
     if latest_version != current_version:
         model_registry.update_model_version(
-            name=MetaConfig.mlflow_model_name,
+            name=pipeline_extra["mlflow_model_name"],
             version=current_version,
-            stage=ModelVersionStage.ARCHIVED,
+            stage=ModelVersionStage(ModelVersionStage.ARCHIVED),
             metadata={},
         )
     model_registry.update_model_version(
-        name=MetaConfig.mlflow_model_name,
+        name=pipeline_extra["mlflow_model_name"],
         version=latest_version,
-        stage=MetaConfig.target_env,
+        stage=ModelVersionStage(pipeline_extra["target_env"]),
         metadata={},
     )
     promoted_version = latest_version
 
     logger.info(
-        f"Current model version in `{MetaConfig.target_env.value}` is `{promoted_version}`"
+        f"Current model version in `{pipeline_extra['target_env']}` is `{promoted_version}`"
     )
     ### YOUR CODE ENDS HERE ###

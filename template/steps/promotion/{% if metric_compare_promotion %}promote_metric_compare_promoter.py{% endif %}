@@ -1,8 +1,7 @@
 # {% include 'template/license_header' %}
 
 
-from config import MetaConfig
-from zenml import step
+from zenml import get_step_context, step
 from zenml.client import Client
 from zenml.logger import get_logger
 from zenml.model_registries.base_model_registry import ModelVersionStage
@@ -46,6 +45,7 @@ def promote_metric_compare_promoter(
     """
 
     ### ADD YOUR OWN CODE HERE - THIS IS JUST AN EXAMPLE ###
+    pipeline_extra = get_step_context().pipeline_run.config.extra
     should_promote = True
 
     if latest_version == current_version:
@@ -69,18 +69,18 @@ def promote_metric_compare_promoter(
     if should_promote:
         if latest_version != current_version:
             model_registry.update_model_version(
-                name=MetaConfig.mlflow_model_name,
+                name=pipeline_extra["mlflow_model_name"],
                 version=current_version,
                 stage=ModelVersionStage.ARCHIVED,
             )
         model_registry.update_model_version(
-            name=MetaConfig.mlflow_model_name,
+            name=pipeline_extra["mlflow_model_name"],
             version=latest_version,
-            stage=MetaConfig.target_env,
+            stage=ModelVersionStage(pipeline_extra["target_env"]),
         )
         promoted_version = latest_version
 
     logger.info(
-        f"Current model version in `{MetaConfig.target_env.value}` is `{promoted_version}`"
+        f"Current model version in `{pipeline_extra['target_env']}` is `{promoted_version}`"
     )
     ### YOUR CODE ENDS HERE ###

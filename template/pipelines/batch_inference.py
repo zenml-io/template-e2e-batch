@@ -1,7 +1,6 @@
 # {% include 'template/license_header' %}
 
 
-from config import DEFAULT_PIPELINE_EXTRAS, PIPELINE_SETTINGS, MetaConfig
 from steps import (
     data_loader,
 {%- if data_quality_checks %}
@@ -13,7 +12,7 @@ from steps import (
     notify_on_failure,
     notify_on_success,
 )
-from zenml import pipeline
+from zenml import get_pipeline_context, pipeline
 from zenml.integrations.evidently.metrics import EvidentlyMetricConfig
 from zenml.integrations.evidently.steps import evidently_report_step
 from zenml.integrations.mlflow.steps.mlflow_deployer import (
@@ -25,11 +24,7 @@ from zenml.artifacts.external_artifact import ExternalArtifact
 logger = get_logger(__name__)
 
 
-@pipeline(
-    settings=PIPELINE_SETTINGS,
-    on_failure=notify_on_failure,
-    extra=DEFAULT_PIPELINE_EXTRAS,
-)
+@pipeline(on_failure=notify_on_failure)
 def {{product_name}}_batch_inference():
     """
     Model batch inference pipeline.
@@ -45,7 +40,7 @@ def {{product_name}}_batch_inference():
     df_inference = inference_data_preprocessor(
         dataset_inf=df_inference,
         preprocess_pipeline=ExternalArtifact(
-            pipeline_name=MetaConfig.pipeline_name_training,
+            pipeline_name="{{product_name}}_training",
             artifact_name="preprocess_pipeline",
         ),
         target=target,
@@ -55,7 +50,7 @@ def {{product_name}}_batch_inference():
     ########## DataQuality stage  ##########
     report, _ = evidently_report_step(
         reference_dataset=ExternalArtifact(
-            pipeline_name=MetaConfig.pipeline_name_training,
+            pipeline_name="{{product_name}}_training",
             artifact_name="dataset_trn",
         ),
         comparison_dataset=df_inference,
@@ -69,9 +64,9 @@ def {{product_name}}_batch_inference():
     ########## Inference stage  ##########
     registry_model_version = inference_get_current_version()
     deployment_service = mlflow_model_registry_deployer_step(
-        registry_model_name=MetaConfig.mlflow_model_name,
+        registry_model_name=get_pipeline_context().extra["mlflow_model_name"],
         registry_model_version=registry_model_version,
-        replace_existing=False,
+        replace_existing=True,
     )
     inference_predict(
         deployment_service=deployment_service,

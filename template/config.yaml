@@ -1,0 +1,78 @@
+# {% include 'template/license_header' %}
+
+settings:
+  docker:
+    requirements:
+      - aws
+{%- if data_quality_checks %}
+      - evidently
+{%- endif %}
+      - kubeflow
+      - kubernetes
+      - mlflow
+      - sklearn
+      - slack
+extra:
+  mlflow_model_name: e2e_use_case_model
+{%- if target_environment == 'production' %}
+  target_env: Production
+{%- else %}
+  target_env: Staging
+{%- endif %}
+  notify_on_success: False
+  notify_on_failure: True
+{%- if hyperparameters_tuning %}
+  # This set contains all the models that you want to evaluate
+  # during hyperparameter tuning stage.
+  model_search_space:
+    random_forest:
+      model_package: sklearn.ensemble
+      model_class: RandomForestClassifier
+      search_grid:
+        criterion:
+          - gini
+          - entropy
+        max_depth:
+          - 2
+          - 4
+          - 6
+          - 8
+          - 10
+          - 12
+        min_samples_leaf:
+          range:
+            start: 1
+            end: 10
+        n_estimators:
+          range:
+            start: 50
+            end: 500
+            step: 25
+    decision_tree:
+      model_package: sklearn.tree
+      model_class: DecisionTreeClassifier
+      search_grid:
+        criterion:
+          - gini
+          - entropy
+        max_depth:
+          - 2
+          - 4
+          - 6
+          - 8
+          - 10
+          - 12
+        min_samples_leaf:
+          range:
+            start: 1
+            end: 10
+{%- else %}
+    # This model configuration will be used for the training stage.
+  model_configuration:
+    model_package: sklearn.tree
+    model_class: DecisionTreeClassifier
+    params:
+      criterion: gini
+      max_depth: 5
+      min_samples_leaf: 3
+{%- endif %}

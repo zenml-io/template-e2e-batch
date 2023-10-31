@@ -2,7 +2,7 @@
 
 settings:
   docker:
-    requirements:
+    required_integrations:
       - aws
 {%- if data_quality_checks %}
       - evidently

@@ -63,7 +63,7 @@ source .venv/bin/activate
 # Install requirements & integrations
 make setup
 # Optionally, provision default local stack
-make install-stack
+make install-stack-local
 # Start the ZenML UI locally (recommended, but optional);
 # the default username is "admin" with an empty password
 zenml up

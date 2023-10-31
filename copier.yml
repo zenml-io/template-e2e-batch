@@ -125,7 +125,7 @@ _tasks:
       echo "   cd {{ _copier_conf.dst_path }}"
       echo "   make setup"
       echo "   # optional, provision default local stack"
-      echo "   make install-stack"
+      echo "   make install-stack-local"
       echo "   # optional, start ZenML Dashboard"
       echo "   zenml up"
       echo "   python run.py"

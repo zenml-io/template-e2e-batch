@@ -15,7 +15,7 @@ model_registry = Client().active_stack.model_registry
 def promote_latest_in_model_registry(
     latest_version:str, 
     current_version:str,
-)->Annotated[int,"promoted_version"]:
+) -> Annotated[int,"promoted_version"]:
     """Promote latest trained model.
 
     This is an example of a model promotion step, which promotes the

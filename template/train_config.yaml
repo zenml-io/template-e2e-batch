@@ -84,7 +84,7 @@ model_config:
   use_cases: |
     The {{project_name}} project demonstrates how the most important steps of 
     the ML Production Lifecycle can be implemented in a reusable way remaining 
-    agnostic to the underlying infrastructure, and how to integrate them together 
+    agnostic to the underlying infrastructure, and shows how to integrate them together 
     into pipelines serving Training and Batch Inference purposes.
   ethics: No impact.
   tags:

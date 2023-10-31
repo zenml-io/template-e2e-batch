@@ -109,7 +109,7 @@ It consists of two pipelines with the following high-level setup:
   <img height=300 src=".assets/00_pipelines_composition.png">
 </p>
 
-Both pipelines are inside a shared Model Control Plane model context - training pipeline creates and promotes new Model Control Plane version and inference pipeline is reading from inference Model Control Plane version. This makes those pipelines closely connected, while ensuring that only quality assured Model Control Plane versions are used to produce predictions delivered to stakeholders.
+Both pipelines are inside a shared Model Control Plane model context - training pipeline creates and promotes new Model Control Plane version and inference pipeline is reading from inference Model Control Plane version. This makes those pipelines closely connected, while ensuring that only quality-assured Model Control Plane versions are used to produce predictions delivered to stakeholders.
 * [CT] Training
   * Load, split, and preprocess the training dataset
   * Search for an optimal model object architecture and tune its hyperparameters

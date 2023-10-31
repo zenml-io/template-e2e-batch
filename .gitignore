@@ -162,3 +162,4 @@ cython_debug/
 .vscode/ 
 .local/
 .ruff_cache/
+.DS_Store

@@ -34,7 +34,7 @@ It showcases the core ZenML concepts for supervised ML with batch predictions:
 to design flexible and reusable steps
 * using [custom data types for your artifacts and writing materializers for them](https://docs.zenml.io/user-guide/advanced-guide/artifact-management/handle-custom-data-types)
 * constructing and running a [ZenML pipeline](https://docs.zenml.io/user-guide/starter-guide/create-an-ml-pipeline)
-* TODO: add Model Control Plane docs
+* usage of ZenML Model Control Plane
 * best practices for implementing and running reproducible and reliable ML
 pipelines with ZenML
 
@@ -199,7 +199,7 @@ model_config:
 ```
 
 <p align="center">
-  <img height=500 src="assets/05_batch_inference.png">
+  <img height=500 src="assets/05_inference.png">
 </p>
 
 ### [Continuous Deployment] Batch Inference: ETL Steps

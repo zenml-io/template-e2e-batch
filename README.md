@@ -24,7 +24,7 @@ Both pipelines are inside a shared Model Control Plane model context - training 
   * Load the inference dataset and preprocess it reusing object fitted during training
   * Perform data drift analysis reusing training dataset of the inference Model Control Plane version as a reference
   * Run predictions using a model object from the inference Model Control Plane version
-  * Store predictions as an versioned artifact and link it to the inference Model Control Plane version
+  * Store predictions as a versioned artifact and link it to the inference Model Control Plane version
 
 It showcases the core ZenML concepts for supervised ML with batch predictions:
 
@@ -89,7 +89,7 @@ zenml init --template <short_name_of_template> --template-with-defaults
 We will be going section by section diving into implementation details and sharing tips and best practices along this journey.
 
 ### [Continuous Training] Training Pipeline
-Training pipeline is designed to create a new Model Control Plane version and promote it to inference stage upon successful quality assurance at the end of the pipeline. This ensures that we always infer only on quality assured Model Control Plane version and provides a seamless integration of required artifacts of this Model Control Plane version later on inference runs.
+Training pipeline is designed to create a new Model Control Plane version and promote it to inference stage upon successfully passing the quality assurance at the end of the pipeline. This ensures that we always infer only on quality-assured Model Control Plane version and provides a seamless integration of required artifacts of this Model Control Plane version later on inference runs.
 This is achieved by providing this configuration in `train_config.yaml` used to configure our pipeline:
 ```yaml
 model_config:
@@ -149,7 +149,7 @@ def model_trainer(
   ...
 ```
 </details>
-Even knowing that the hyperparameter tuning step happened we would like to ensure that our model object meets at least minimal quality standardsy this quality gate is on the evaluation step. In case the model object is of low quality metric-wise an `Exception` will be raised and the pipeline will stop.
+Even knowing that the hyperparameter tuning step happened we would like to ensure that our model object meets at least minimal quality standards; this quality gate is on the evaluation step. In case the model object is of low quality metric-wise an `Exception` will be raised and the pipeline will stop.
 
 To notify maintainers of our Model Control Plane model about failures or successful completion of a pipeline we use the active stack's [Alerter](https://docs.zenml.io/stacks-and-components/component-guide/alerters) component. For failures it is convenient to use pipeline hook `on_failure` and for successes, a step notifying about it added as a last step of the pipeline comes in handy.
 <details>
@@ -181,16 +181,16 @@ def e2e_example_training(...):
   <img height=500 src="assets/04_promotion.png">
 </p>
 
-Once the model object is trained and evaluated on meeting basic quality standards, we would like to understand whether it is good enough to beat the existing model object used in inference. This is a very important step, as promoting a weak model object as inference might result in huge negative impact at the end of the day.
+Once the model object is trained and evaluated on meeting basic quality standards, we would like to understand whether it is good enough to beat the existing model object used in inference. This is a very important step, as promoting a weak model object as inference might have a huge negative impact.
 
-In this example, we are implementing metric compare promotion to decide on the spot and avoid more complex approaches like Champion/Challengers shadow deployments. In other projects, other promotion techniques and strategies can be used.
+In this example, we are implementing promotion based on metric comparison to decide on the spot and avoid more complex approaches like Champion/Challengers shadow deployments. In other projects, other promotion techniques and strategies can be used.
 
 To achieve this we would retrieve the model registry version from [Model Registry](https://docs.zenml.io/stacks-and-components/component-guide/model-registries): latest (the one we just trained) and current (the one having a proper tag). Next, we need to deploy both model objects using [Model Deployer](https://docs.zenml.io/stacks-and-components/component-guide/model-deployers) and run predictions on the testing set for both of them. Next, we select which one of the model registry versions has a better metric value and associate it with the inference tag.
 
-As a last step we promote the current Model Control Plane version to the inference stage, if a promotion decision was made. By doing so we ensure that the best Model Control Plane version would be used for inference later on and ensure seamless integration of relevant artifacts from training pipeline in the batch inference pipeline.
+As a last step we promote the current Model Control Plane version to the inference stage if a promotion decision was made. By doing so we ensure that the best Model Control Plane version would be used for inference later on and ensure seamless integration of relevant artifacts from training pipeline in the batch inference pipeline.
 
 ### [Continuous Deployment] Batch Inference
-The Batch Inference pipeline is designed to run with inference Model Control Plane version context. This ensures that we always infer only on quality assured Model Control Plane version and provide seamless integration of required artifacts created during training of this Model Control Plane version.
+The Batch Inference pipeline is designed to run with inference Model Control Plane version context. This ensures that we always infer only on quality-assured Model Control Plane version and provide seamless integration of required artifacts created during training of this Model Control Plane version.
 This is achieved by providing this configuration in `inference_config.yaml` used to configure our pipeline:
 ```yaml
 model_config:
@@ -232,9 +232,9 @@ df_inference = inference_data_preprocessor(
 
 On the drift reporting stage we will use [standard step](https://docs.zenml.io/stacks-and-components/component-guide/data-validators/evidently#the-evidently-data-validator) `evidently_report_step` to build Evidently report to assess certain data quality metrics. `evidently_report_step` has a number of options, but for this example, we will build only `DataQualityPreset` metrics preset to get a number of NA values in reference and current datasets.
 
-We pass `dataset_trn` from training pipeline as a `reference_dataset` here. To do so we will use [ExternalArtifact](https://docs.zenml.io/user-guide/advanced-guide/pipelining-features/configure-steps-pipelines#pass-any-kind-of-data-to-your-steps) with lookup by `model_artifact_name` only to get the training dataset used during quality assured training run. This is possible, since we configured batch inference pipeline to run inside a Model Control Plane version context.
+We pass `dataset_trn` from training pipeline as a `reference_dataset` here. To do so we will use [ExternalArtifact](https://docs.zenml.io/user-guide/advanced-guide/pipelining-features/configure-steps-pipelines#pass-any-kind-of-data-to-your-steps) with lookup by `model_artifact_name` only to get the training dataset used during quality-assured training run. This is possible, since we configured batch inference pipeline to run inside a Model Control Plane version context.
 
-After the report is built we execute another quality gate using the `drift_quality_gate` step, which assesses if a significant drift in NA count is observed. If so, execution is stopped with an exception.
+After the report is built we execute another quality gate using the `drift_quality_gate` step, which assesses if a significant drift in the NA count is observed. If so, execution is stopped with an exception.
 
 You can follow [Data Validators docs](https://docs.zenml.io/stacks-and-components/component-guide/data-validators) to get more inspiration on how and when to use drift detection in your pipelines.
 

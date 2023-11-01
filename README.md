@@ -199,7 +199,7 @@ model_config:
 ```
 
 <p align="center">
-  <img height=500 src="assets/05_inference.png">
+  <img height=500 src="assets/05_batch_inference.png">
 </p>
 
 ### [Continuous Deployment] Batch Inference: ETL Steps

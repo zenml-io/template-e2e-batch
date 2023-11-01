@@ -24,7 +24,7 @@ def hp_tuning_single_search(
     dataset_trn: pd.DataFrame,
     dataset_tst: pd.DataFrame,
     target: str,
-) -> Tuple[Annotated[ClassifierMixin, "best_model"],Annotated[float,"metric"]]:
+) -> Tuple[Annotated[ClassifierMixin, "best_model"], Annotated[float, "metric"]]:
     """Evaluate a trained model.
 
     This is an example of a model hyperparameter tuning step that takes
@@ -50,15 +50,15 @@ def hp_tuning_single_search(
         The best possible model parameters for given config.
     """
     model_class = get_model_from_config(model_package, model_class)
-    
+
     for search_key in search_grid:
         if "range" in search_grid[search_key]:
             search_grid[search_key] = range(
-                search_grid[search_key]["range"]["start"], 
-                search_grid[search_key]["range"]["end"], 
-                search_grid[search_key]["range"].get("step",1)
+                search_grid[search_key]["range"]["start"],
+                search_grid[search_key]["range"]["end"],
+                search_grid[search_key]["range"].get("step", 1),
             )
-    
+
     ### ADD YOUR OWN CODE HERE - THIS IS JUST AN EXAMPLE ###
 
     X_trn = dataset_trn.drop(columns=[target])

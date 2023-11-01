@@ -1,6 +1,6 @@
 # {% include 'template/license_header' %}
 
-
+from typing_extensions import Annotated
 from zenml import get_step_context, step
 from zenml.client import Client
 from zenml.logger import get_logger
@@ -12,7 +12,10 @@ model_registry = Client().active_stack.model_registry
 
 
 @step
-def promote_latest(latest_version:str, current_version:str):
+def promote_latest_in_model_registry(
+    latest_version:str, 
+    current_version:str,
+) -> Annotated[int,"promoted_version"]:
     """Promote latest trained model.
 
     This is an example of a model promotion step, which promotes the
@@ -46,3 +49,4 @@ def promote_latest(latest_version:str, current_version:str):
         f"Current model version in `{pipeline_extra['target_env']}` is `{promoted_version}`"
     )
     ### YOUR CODE ENDS HERE ###
+    return int(promoted_version)

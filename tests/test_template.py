@@ -26,9 +26,7 @@ from copier import Worker
 from zenml.client import Client
 from zenml.enums import ExecutionStatus
 
-TEMPLATE_DIRECTORY = str(
-    pathlib.Path.joinpath(pathlib.Path(__file__).parent.parent)
-)
+TEMPLATE_DIRECTORY = str(pathlib.Path.joinpath(pathlib.Path(__file__).parent.parent))
 
 
 def generate_and_run_project(
@@ -56,7 +54,7 @@ def generate_and_run_project(
         "target_environment": target_environment,
         "notify_on_failures": notify_on_failures,
         "notify_on_successes": notify_on_successes,
-        "zenml_server_url": zenml_server_url
+        "zenml_server_url": zenml_server_url,
     }
     if open_source_license:
         answers["email"] = "pytest@zenml.io"
@@ -74,9 +72,10 @@ def generate_and_run_project(
         dst_path=str(dst_path),
         data=answers,
         unsafe=True,
+        vcs_ref="HEAD",
     ) as worker:
         worker.run_copy()
-    
+
     # MLFlow Deployer not supported on Windows
     # MLFlow `service daemon is not running` error on MacOS
     if platform.system().lower() not in ["windows", "macos", "darwin"]:
@@ -106,9 +105,12 @@ def generate_and_run_project(
 
             # clean up
             Client().delete_pipeline(product_name + pipeline_suffix)
+        Client().delete_model(product_name)
+        Client().active_stack.model_registry.delete_model(product_name)
 
     os.chdir(current_dir)
     shutil.rmtree(dst_path)
+
 
 @pytest.mark.parametrize("open_source_license", ["mit", None], ids=["oss", "css"])
 def test_generate_license(
@@ -123,6 +125,7 @@ def test_generate_license(
         open_source_license=open_source_license,
     )
 
+
 def test_custom_product_name(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,
@@ -134,6 +137,7 @@ def test_custom_product_name(
         product_name="custom_product_name",
     )
 
+
 def test_no_hp_tuning(
     clean_zenml_client,
     tmp_path_factory: pytest.TempPathFactory,
@@ -141,9 +145,9 @@ def test_no_hp_tuning(
     """Test turning off hyperparameter tuning."""
 
     generate_and_run_project(
-        tmp_path_factory=tmp_path_factory,
-        hyperparameters_tuning=False
+        tmp_path_factory=tmp_path_factory, hyperparameters_tuning=False
     )
+
 
 def test_latest_promotion(
     clean_zenml_client,
@@ -152,9 +156,9 @@ def test_latest_promotion(
     """Test using latest promotion."""
 
     generate_and_run_project(
-        tmp_path_factory=tmp_path_factory,
-        metric_compare_promotion=False
+        tmp_path_factory=tmp_path_factory, metric_compare_promotion=False
     )
+
 
 def test_no_data_quality_checks(
     clean_zenml_client,
@@ -163,9 +167,10 @@ def test_no_data_quality_checks(
     """Test skipping Data Quality checks."""
 
     generate_and_run_project(
-        tmp_path_factory=tmp_path_factory, 
+        tmp_path_factory=tmp_path_factory,
         data_quality_checks=False,
     )
+
 
 def test_production_environment(
     clean_zenml_client,
@@ -174,9 +179,10 @@ def test_production_environment(
     """Test deploying to production stage."""
 
     generate_and_run_project(
-        tmp_path_factory=tmp_path_factory, 
+        tmp_path_factory=tmp_path_factory,
         target_environment="production",
     )
+
 
 def test_no_notify_on_failure(
     clean_zenml_client,
@@ -185,9 +191,10 @@ def test_no_notify_on_failure(
     """Test skipping notification on failure."""
 
     generate_and_run_project(
-        tmp_path_factory=tmp_path_factory, 
+        tmp_path_factory=tmp_path_factory,
         notify_on_failures=False,
     )
+
 
 def test_notify_on_success(
     clean_zenml_client,
@@ -196,9 +203,10 @@ def test_notify_on_success(
     """Test skipping notification on success."""
 
     generate_and_run_project(
-        tmp_path_factory=tmp_path_factory, 
+        tmp_path_factory=tmp_path_factory,
         notify_on_successes=True,
     )
+
 
 def test_custom_zenml_server_url(
     clean_zenml_client,
@@ -207,7 +215,6 @@ def test_custom_zenml_server_url(
     """Test deploying to production stage."""
 
     generate_and_run_project(
-        tmp_path_factory=tmp_path_factory, 
+        tmp_path_factory=tmp_path_factory,
         zenml_server_url="foo",
     )
-

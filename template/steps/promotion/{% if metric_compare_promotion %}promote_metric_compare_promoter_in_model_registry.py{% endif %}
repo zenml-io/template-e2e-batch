@@ -1,6 +1,6 @@
 # {% include 'template/license_header' %}
 
-
+from typing_extensions import Annotated, Tuple
 from zenml import get_step_context, step
 from zenml.client import Client
 from zenml.logger import get_logger
@@ -12,12 +12,12 @@ model_registry = Client().active_stack.model_registry
 
 
 @step
-def promote_metric_compare_promoter(
+def promote_metric_compare_promoter_in_model_registry(
     latest_metric: float,
     current_metric: float,
     latest_version: str,
     current_version: str,
-):
+)->Tuple[Annotated[bool, "was_promoted"], Annotated[int,"promoted_version"]]:
     """Try to promote trained model.
 
     This is an example of a model promotion step. It gets precomputed
@@ -55,7 +55,7 @@ def promote_metric_compare_promoter(
             f"Latest model metric={latest_metric:.6f}\n"
             f"Current model metric={current_metric:.6f}"
         )
-        if latest_metric > current_metric:
+        if latest_metric >= current_metric:
             logger.info(
                 "Latest model versions outperformed current versions - promoting latest"
             )
@@ -84,3 +84,4 @@ def promote_metric_compare_promoter(
         f"Current model version in `{pipeline_extra['target_env']}` is `{promoted_version}`"
     )
     ### YOUR CODE ENDS HERE ###
+    return should_promote, int(promoted_version)

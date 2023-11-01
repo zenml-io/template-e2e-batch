@@ -40,8 +40,7 @@ def {{product_name}}_batch_inference():
     df_inference = inference_data_preprocessor(
         dataset_inf=df_inference,
         preprocess_pipeline=ExternalArtifact(
-            pipeline_name="{{product_name}}_training",
-            artifact_name="preprocess_pipeline",
+            model_artifact_name="preprocess_pipeline",
         ),
         target=target,
     )
@@ -50,8 +49,7 @@ def {{product_name}}_batch_inference():
     ########## DataQuality stage  ##########
     report, _ = evidently_report_step(
         reference_dataset=ExternalArtifact(
-            pipeline_name="{{product_name}}_training",
-            artifact_name="dataset_trn",
+            model_artifact_name="dataset_trn",
         ),
         comparison_dataset=df_inference,
         ignored_cols=["target"],
@@ -62,10 +60,11 @@ def {{product_name}}_batch_inference():
     drift_quality_gate(report)
 {%- endif %}
     ########## Inference stage  ##########
-    registry_model_version = inference_get_current_version()
     deployment_service = mlflow_model_registry_deployer_step(
         registry_model_name=get_pipeline_context().extra["mlflow_model_name"],
-        registry_model_version=registry_model_version,
+        registry_model_version=ExternalArtifact(
+            model_artifact_name="promoted_version",
+        ),
         replace_existing=True,
     )
     inference_predict(

@@ -15,11 +15,12 @@ from steps import (
     notify_on_success,
 {%- if metric_compare_promotion %}
     promote_get_metric,
-    promote_metric_compare_promoter,
+    promote_metric_compare_promoter_in_model_registry,
 {%- else %}
-    promote_latest,
+    promote_latest_in_model_registry,
 {%- endif %}
     promote_get_versions,
+    promote_model_version_in_model_control_plane,
     train_data_preprocessor,
     train_data_splitter,
 )
@@ -46,7 +47,6 @@ def {{product_name}}_training(
     drop_na: Optional[bool] = None,
     normalize: Optional[bool] = None,
     drop_columns: Optional[List[str]] = None,
-    random_seed: int = 42,
     min_train_accuracy: float = 0.0,
     min_test_accuracy: float = 0.0,
     fail_on_accuracy_quality_gates: bool = False,
@@ -63,7 +63,6 @@ def {{product_name}}_training(
         drop_na: If `True` NA values will be removed from dataset
         normalize: If `True` dataset will be normalized with MinMaxScaler
         drop_columns: List of columns to drop from dataset
-        random_seed: Seed of random generator,
         min_train_accuracy: Threshold to stop execution if train set accuracy is lower
         min_test_accuracy: Threshold to stop execution if test set accuracy is lower
         fail_on_accuracy_quality_gates: If `True` and `min_train_accuracy` or `min_test_accuracy`
@@ -123,7 +122,6 @@ def {{product_name}}_training(
 {%- else %}
         model=ExternalArtifact(value=best_model),
 {%- endif %}
-        random_seed=random_seed,
         target=target,
     )
     model_evaluator(
@@ -170,20 +168,20 @@ def {{product_name}}_training(
         deployment_service=current_deployment,
     )
 
-    promote_metric_compare_promoter(
+    was_promoted, promoted_version = promote_metric_compare_promoter_in_model_registry(
         latest_metric=latest_metric,
         current_metric=current_metric,
         latest_version=latest_version,
         current_version=current_version,
     )
-    last_step_name = "promote_metric_compare_promoter"
 {%- else %}
-    promote_latest(
-         latest_version=latest_version,
+    promoted_version = promote_latest_in_model_registry(
+        latest_version=latest_version,
         current_version=current_version,
     )
-    last_step_name = "promote_latest"
+    was_promoted = True
 {%- endif %}
+    promote_model_version_in_model_control_plane(was_promoted)
 
-    notify_on_success(after=[last_step_name])
+    notify_on_success(after=["promote_model_version_in_model_control_plane"])
     ### YOUR CODE ENDS HERE ###

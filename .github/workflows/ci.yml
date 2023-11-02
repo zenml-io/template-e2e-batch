@@ -36,4 +36,5 @@ jobs:
         with:
           stack-name: ${{ matrix.stack-name }}
           python-version: ${{ matrix.python-version }}
-          ref-zenml: develop
+          # this is fine to merge to main any ref here, it just need to be adjusted in subsequent PRs
+          ref-zenml: feature/OSS-2576-split-model-config-into-producer-and-consumer

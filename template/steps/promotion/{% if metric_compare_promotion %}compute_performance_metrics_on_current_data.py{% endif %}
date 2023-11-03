@@ -1,0 +1,69 @@
+# {% include 'template/license_header' %}
+
+from typing import Tuple
+from typing_extensions import Annotated
+
+import pandas as pd
+from sklearn.metrics import accuracy_score
+from zenml import step, get_step_context
+from zenml.client import Client
+from zenml.integrations.mlflow.steps.mlflow_deployer import (
+    mlflow_model_registry_deployer_step,
+)
+from zenml.logger import get_logger
+
+from utils import get_model_versions
+
+logger = get_logger(__name__)
+
+@step
+def compute_performance_metrics_on_current_data(
+    dataset_tst: pd.DataFrame,
+) -> Tuple[Annotated[float, "latest_metric"],Annotated[float, "current_metric"]]:
+    """Get metrics for comparison during promotion on fresh dataset.
+
+    This is an example of a metrics calculation step. It computes metric 
+    on recent test dataset.
+
+    This step is parameterized, which allows you to configure the step
+    independently of the step code, before running it in a pipeline.
+    In this example, the step can be configured to use different input data.
+    See the documentation for more information:
+
+        https://docs.zenml.io/user-guide/advanced-guide/configure-steps-pipelines
+
+    Args:
+        dataset_tst: The test dataset.
+
+    Returns:
+        Latest version and current version metric values on a test set.
+    """
+
+    ### ADD YOUR OWN CODE HERE - THIS IS JUST AN EXAMPLE ###
+    pipeline_extra = get_step_context().pipeline_run.config.extra
+    target_env = pipeline_extra["target_env"].lower()
+    model_version = get_step_context().model_config._get_model_version()
+
+    X = dataset_tst.drop(columns=["target"])
+    y = dataset_tst["target"].to_numpy()
+    logger.info("Evaluating model metrics...")
+
+    # Get model version numbers from Model Control Plane
+    latest_version, current_version = get_model_versions(model_version, target_env)
+
+    if latest_version != current_version:
+        metrics = {}
+        for version in [latest_version,current_version]:
+            deployment_service = mlflow_model_registry_deployer_step.entrypoint(
+                registry_model_name=pipeline_extra["mlflow_model_name"],
+                registry_model_version=version,
+                replace_existing=True,
+            )
+
+            predictions = deployment_service.predict(request=X)
+            metrics[version]=accuracy_score(y, predictions)
+            deployment_service.deprovision(force=True)
+    else:
+        metrics = {latest_version:1.0,current_version:0.0}
+    ### YOUR CODE ENDS HERE ###
+    return metrics[latest_version],metrics[current_version]

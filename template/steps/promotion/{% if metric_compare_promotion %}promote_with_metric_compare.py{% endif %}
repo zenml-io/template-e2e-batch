@@ -56,11 +56,11 @@ def promote_with_metric_compare(
         )
         if latest_metric >= current_metric:
             logger.info(
-                "Latest model versions outperformed current versions - promoting latest"
+                "Latest model version outperformed current version - promoting latest"
             )
         else:
             logger.info(
-                "Current model versions outperformed latest versions - keeping current"
+                "Current model version outperformed latest version - keeping current"
             )
             should_promote = False
 

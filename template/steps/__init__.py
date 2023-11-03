@@ -17,12 +17,10 @@ from .hp_tuning import hp_tuning_select_best_model, hp_tuning_single_search
 from .inference import inference_predict
 from .promotion import (
 {%- if metric_compare_promotion %}
-    promote_get_metric,
-    promote_metric_compare_promoter_in_model_registry,
+    compute_performance_metrics_on_current_data,
+    promote_with_metric_compare,
 {%- else %}
-    promote_latest_in_model_registry,
+    promote_latest_version,
 {%- endif %}
-    promote_get_versions,
-    promote_model_version_in_model_control_plane,
 )
 from .training import model_evaluator, model_trainer

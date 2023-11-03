@@ -2,10 +2,8 @@
 
 
 {%- if metric_compare_promotion %}
-from .promote_get_metric import promote_get_metric
-from .promote_metric_compare_promoter_in_model_registry import promote_metric_compare_promoter_in_model_registry
+from .compute_performance_metrics_on_current_data import compute_performance_metrics_on_current_data
+from .promote_with_metric_compare import promote_with_metric_compare
 {%- else %}
-from .promote_latest_in_model_registry import promote_latest_in_model_registry
+from .promote_latest_version import promote_latest_version
 {%- endif %}
-from .promote_get_versions import promote_get_versions
-from .promote_model_version_in_model_control_plane import promote_model_version_in_model_control_plane

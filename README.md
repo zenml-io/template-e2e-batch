@@ -168,8 +168,8 @@ def notify_on_success() -> None:
 @pipeline(on_failure=notify_on_failure)
 def e2e_example_training(...):
   ...
-  promote_metric_compare_promoter_in_model_registry(...)
-  notify_on_success(after=["promote_metric_compare_promoter_in_model_registry"])
+  promote_with_metric_compare(...)
+  notify_on_success(after=["promote_with_metric_compare"])
 ```
 </details>
 

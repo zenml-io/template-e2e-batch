@@ -17,8 +17,9 @@ artifact_store = Client().active_stack.artifact_store
 
 @step
 def data_loader(
-    is_inference: bool = False,
-) -> Tuple[Annotated[pd.DataFrame, "dataset"], Annotated[str, "target"],]:
+    random_state: int,
+    is_inference: bool = False
+) -> Tuple[Annotated[pd.DataFrame, "dataset"], Annotated[str, "target"],Annotated[int,"random_state"]]:
     """Dataset reader step.
 
     This is an example of a dataset reader step that load Breast Cancer dataset.
@@ -33,6 +34,7 @@ def data_loader(
     Args:
         is_inference: If `True` subset will be returned and target column
             will be removed from dataset.
+        random_state: Random state for sampling
 
     Returns:
         The dataset artifact as Pandas DataFrame and name of target column.
@@ -42,7 +44,10 @@ def data_loader(
     inference_size = int(len(dataset.target) * 0.05)
     target = "target"
     dataset: pd.DataFrame = dataset.frame
-    inference_subset = dataset.sample(inference_size, random_state=42)
+    inference_subset = dataset.sample(
+        inference_size,
+        random_state=random_state
+        )
     if is_inference:
         dataset = inference_subset
         dataset.drop(columns=target, inplace=True)
@@ -51,4 +56,4 @@ def data_loader(
     dataset.reset_index(drop=True, inplace=True)
     logger.info(f"Dataset with {len(dataset)} records loaded!")
     ### YOUR CODE ENDS HERE ###
-    return dataset, target
+    return dataset, target, random_state

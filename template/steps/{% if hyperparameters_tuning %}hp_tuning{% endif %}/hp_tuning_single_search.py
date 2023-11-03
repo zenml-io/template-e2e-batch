@@ -11,7 +11,7 @@ from sklearn.model_selection import RandomizedSearchCV
 from zenml import step
 from zenml.logger import get_logger
 
-from utils.get_model_from_config import get_model_from_config
+from utils import get_model_from_config
 
 logger = get_logger(__name__)
 

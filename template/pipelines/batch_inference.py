@@ -6,7 +6,6 @@ from steps import (
     drift_quality_gate,
 {%- endif %}
     inference_data_preprocessor,
-    inference_get_current_version,
     inference_predict,
     notify_on_failure,
     notify_on_success,

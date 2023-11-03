@@ -6,7 +6,6 @@ from typing_extensions import Annotated
 import pandas as pd
 from sklearn.metrics import accuracy_score
 from zenml import step, get_step_context
-from zenml.client import Client
 from zenml.integrations.mlflow.steps.mlflow_deployer import (
     mlflow_model_registry_deployer_step,
 )

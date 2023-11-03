@@ -1,11 +1,7 @@
 # {% include 'template/license_header' %}
 
-from typing_extensions import Annotated
 from zenml import get_step_context, step
-from zenml.client import Client
-from zenml.enums import ModelStages
 from zenml.logger import get_logger
-from zenml.model import ModelConfig
 
 from utils import get_model_versions, promote_in_model_registry
 

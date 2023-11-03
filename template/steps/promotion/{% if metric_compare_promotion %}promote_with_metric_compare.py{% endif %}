@@ -1,8 +1,6 @@
 # {% include 'template/license_header' %}
 
-from typing_extensions import Annotated, Tuple
 from zenml import get_step_context, step
-from zenml.client import Client
 from zenml.logger import get_logger
 
 from utils import get_model_versions, promote_in_model_registry

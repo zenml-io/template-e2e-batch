@@ -7,12 +7,9 @@ from typing_extensions import Annotated
 import pandas as pd
 from sklearn.datasets import load_breast_cancer
 from zenml import step
-from zenml.client import Client
 from zenml.logger import get_logger
 
 logger = get_logger(__name__)
-
-artifact_store = Client().active_stack.artifact_store
 
 
 @step

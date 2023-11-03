@@ -74,16 +74,18 @@ def model_trainer(
         dataset_trn[target],
     )
 
+    # register mlflow model
     mlflow_register_model_step.entrypoint(
         model,
         name=name,
     )
-    ### YOUR CODE ENDS HERE ###
+    # keep track of mlflow version for future use
     log_artifact_metadata(
         output_name="model",
         model_registry_version=Client()
         .active_stack.model_registry.list_model_versions(name=name)[-1]
         .version,
     )
+    ### YOUR CODE ENDS HERE ###
 
     return model

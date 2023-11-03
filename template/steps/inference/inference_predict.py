@@ -37,11 +37,13 @@ def inference_predict(
     pipeline_extra = get_step_context().pipeline_run.config.extra
     promoted_version = str(get_step_context().model_config._get_model_version().number)
 
+    # deploy predictor service
     deployment_service = mlflow_model_registry_deployer_step.entrypoint(
         registry_model_name=pipeline_extra["mlflow_model_name"],
         registry_model_version=promoted_version,
         replace_existing=True,
     )
+    # run prediction and prepare output
     predictions = deployment_service.predict(request=dataset_inf)
     predictions = pd.Series(predictions, name="predicted")
     deployment_service.deprovision(force=True)

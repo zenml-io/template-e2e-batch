@@ -81,7 +81,9 @@ def model_trainer(
     ### YOUR CODE ENDS HERE ###
     log_artifact_metadata(
         output_name="model",
-        model_registry_version = Client().active_stack.model_registry.list_model_versions(name=name)[-1].version
+        model_registry_version=Client()
+        .active_stack.model_registry.list_model_versions(name=name)[-1]
+        .version,
     )
 
     return model

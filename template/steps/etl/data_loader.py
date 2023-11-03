@@ -14,9 +14,12 @@ logger = get_logger(__name__)
 
 @step
 def data_loader(
-    random_state: int,
-    is_inference: bool = False
-) -> Tuple[Annotated[pd.DataFrame, "dataset"], Annotated[str, "target"],Annotated[int,"random_state"]]:
+    random_state: int, is_inference: bool = False
+) -> Tuple[
+    Annotated[pd.DataFrame, "dataset"],
+    Annotated[str, "target"],
+    Annotated[int, "random_state"],
+]:
     """Dataset reader step.
 
     This is an example of a dataset reader step that load Breast Cancer dataset.
@@ -41,10 +44,7 @@ def data_loader(
     inference_size = int(len(dataset.target) * 0.05)
     target = "target"
     dataset: pd.DataFrame = dataset.frame
-    inference_subset = dataset.sample(
-        inference_size,
-        random_state=random_state
-        )
+    inference_subset = dataset.sample(inference_size, random_state=random_state)
     if is_inference:
         dataset = inference_subset
         dataset.drop(columns=target, inplace=True)

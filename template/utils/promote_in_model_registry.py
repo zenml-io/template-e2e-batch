@@ -7,11 +7,9 @@ from zenml.model_registries.base_model_registry import ModelVersionStage
 
 logger = get_logger(__name__)
 
+
 def promote_in_model_registry(
-        latest_version:str,
-        current_version:str,
-        model_name:str,
-        target_env: str
+    latest_version: str, current_version: str, model_name: str, target_env: str
 ):
     model_registry = Client().active_stack.model_registry
     if latest_version != current_version:

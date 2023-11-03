@@ -1,14 +1,14 @@
 # {% include 'template/license_header' %}
 
 
-from typing import Any, Dict, Tuple
+from typing import Any, Dict
 from typing_extensions import Annotated
 
 import pandas as pd
 from sklearn.base import ClassifierMixin
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import RandomizedSearchCV
-from zenml import step
+from zenml import step, log_artifact_metadata
 from zenml.logger import get_logger
 
 from utils import get_model_from_config
@@ -24,7 +24,7 @@ def hp_tuning_single_search(
     dataset_trn: pd.DataFrame,
     dataset_tst: pd.DataFrame,
     target: str,
-) -> Tuple[Annotated[ClassifierMixin, "best_model"], Annotated[float, "metric"]]:
+) -> Annotated[ClassifierMixin, "hp_result"]:
     """Evaluate a trained model.
 
     This is an example of a model hyperparameter tuning step that takes
@@ -47,7 +47,7 @@ def hp_tuning_single_search(
         target: Name of target columns in dataset.
 
     Returns:
-        The best possible model parameters for given config.
+        The best possible model for given config.
     """
     model_class = get_model_from_config(model_package, model_class)
 
@@ -79,5 +79,10 @@ def hp_tuning_single_search(
     cv.fit(X=X_trn, y=y_trn)
     y_pred = cv.predict(X_tst)
     score = accuracy_score(y_tst, y_pred)
+    # log score along with output artifact as metadata
+    log_artifact_metadata(
+        output_name="hp_result",
+        metric=float(score),
+    )
     ### YOUR CODE ENDS HERE ###
-    return cv.best_estimator_, score
+    return cv.best_estimator_

@@ -11,6 +11,14 @@ logger = get_logger(__name__)
 def promote_in_model_registry(
     latest_version: str, current_version: str, model_name: str, target_env: str
 ):
+    """Promote model version in model registry to a given stage.
+
+    Args:
+        latest_version: version to be promoted
+        current_version: currently promoted version
+        model_name: name of the model in registry
+        target_env: stage for promotion
+    """
     model_registry = Client().active_stack.model_registry
     if latest_version != current_version:
         model_registry.update_model_version(

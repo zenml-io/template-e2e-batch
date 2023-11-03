@@ -53,12 +53,14 @@ def compute_performance_metrics_on_current_data(
     if latest_version != current_version:
         metrics = {}
         for version in [latest_version,current_version]:
+            # deploy predictor service
             deployment_service = mlflow_model_registry_deployer_step.entrypoint(
                 registry_model_name=pipeline_extra["mlflow_model_name"],
                 registry_model_version=version,
                 replace_existing=True,
             )
 
+            # predict and evaluate
             predictions = deployment_service.predict(request=X)
             metrics[version]=accuracy_score(y, predictions)
             deployment_service.deprovision(force=True)

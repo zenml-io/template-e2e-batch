@@ -159,7 +159,7 @@ def main(
 
         pipeline_args["config_path"] = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
-            "configs"
+            "configs",
             "train_config.yaml",
         )
         pipeline_args[

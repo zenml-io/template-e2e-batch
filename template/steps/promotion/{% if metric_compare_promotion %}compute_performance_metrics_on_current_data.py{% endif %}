@@ -7,7 +7,6 @@ import pandas as pd
 from sklearn.metrics import accuracy_score
 from zenml import step, get_step_context
 from zenml.logger import get_logger
-from zenml.model import ModelConfig
 
 from utils import get_model_versions
 
@@ -39,28 +38,27 @@ def compute_performance_metrics_on_current_data(
     ### ADD YOUR OWN CODE HERE - THIS IS JUST AN EXAMPLE ###
     pipeline_extra = get_step_context().pipeline_run.config.extra
     target_env = pipeline_extra["target_env"].lower()
-    model_version = get_step_context().model_config._get_model_version()
 
     X = dataset_tst.drop(columns=["target"])
     y = dataset_tst["target"].to_numpy()
     logger.info("Evaluating model metrics...")
 
     # Get model version numbers from Model Control Plane
-    latest_version, current_version = get_model_versions(model_version, target_env)
+    latest_version, current_version = get_model_versions(target_env)
 
     # Get predictors
     predictors = {
-        latest_version: model_version.get_model_object("model").load(),
-        current_version: ModelConfig(name=model_version.model.name,version=target_env)._get_model_version().get_model_object("model").load(),
+        latest_version.number: latest_version.get_model_object("model").load(),
+        current_version.number: current_version.get_model_object("model").load(),
     }
 
     if latest_version != current_version:
         metrics = {}
-        for version in [latest_version,current_version]:
+        for version in [latest_version.number,current_version.number]:
             # predict and evaluate
             predictions = predictors[version].predict(X)
             metrics[version]=accuracy_score(y, predictions)
     else:
-        metrics = {latest_version:1.0,current_version:0.0}
+        metrics = {latest_version.number:1.0,current_version.number:0.0}
     ### YOUR CODE ENDS HERE ###
-    return metrics[latest_version],metrics[current_version]
+    return metrics[latest_version.number],metrics[current_version.number]

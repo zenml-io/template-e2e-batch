@@ -3,7 +3,7 @@
 from zenml import get_step_context, step
 from zenml.logger import get_logger
 
-from utils import get_model_versions, promote_in_model_registry
+from utils import get_model_versions, promote_in_model_registry, get_model_registry_version
 
 logger = get_logger(__name__)
 
@@ -43,9 +43,9 @@ def promote_with_metric_compare(
     should_promote = True
 
     # Get model version numbers from Model Control Plane
-    latest_version, current_version = get_model_versions(model_version, target_env)
+    latest_version, current_version = get_model_versions(target_env)
 
-    if latest_version == current_version:
+    if latest_version.number == current_version.number:
         logger.info("No current model version found - promoting latest")
     else:
         logger.info(
@@ -70,14 +70,14 @@ def promote_with_metric_compare(
 
         # Promote in Model Registry
         promote_in_model_registry(
-            latest_version=latest_version,
-            current_version=current_version,
+            latest_version=get_model_registry_version(latest_version),
+            current_version=get_model_registry_version(current_version),
             model_name=pipeline_extra["mlflow_model_name"],
             target_env=pipeline_extra["target_env"]
         )
-        promoted_version = latest_version
+        promoted_version = get_model_registry_version(latest_version)
 
     logger.info(
-        f"Current model version in `{pipeline_extra['target_env']}` is `{promoted_version}`"
+        f"Current model version in `{pipeline_extra['target_env']}` is `{promoted_version}` registered in Model Registry"
     )
     ### YOUR CODE ENDS HERE ###

@@ -24,3 +24,4 @@ from .promotion import (
 {%- endif %}
 )
 from .training import model_evaluator, model_trainer
+from .deployment import deployment_deploy

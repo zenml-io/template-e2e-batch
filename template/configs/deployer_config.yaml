@@ -1,0 +1,31 @@
+# {% include 'template/license_header' %}
+
+# environment configuration
+settings:
+  docker:
+    required_integrations:
+      - aws
+{%- if data_quality_checks %}
+      - evidently
+{%- endif %}
+      - kubeflow
+      - kubernetes
+      - mlflow
+      - sklearn
+      - slack
+
+# configuration of steps  
+steps:
+  notify_on_success:
+    parameters:
+      notify_on_success: False
+
+# configuration of the Model Control Plane
+model_config:
+  name: {{ product_name }}
+  version: {{ target_environment }}
+
+# pipeline level extra configurations
+extra:
+  notify_on_failure: True
+

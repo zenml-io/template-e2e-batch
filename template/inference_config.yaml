@@ -1,5 +1,6 @@
 # {% include 'template/license_header' %}
 
+# environment configuration
 settings:
   docker:
     required_integrations:
@@ -12,15 +13,19 @@ settings:
       - mlflow
       - sklearn
       - slack
-extra:
-  mlflow_model_name: {{ product_name }}
-{%- if target_environment == 'production' %}
-  target_env: Production
-{%- else %}
-  target_env: Staging
-{%- endif %}
-  notify_on_success: False
-  notify_on_failure: True
+
+# configuration of steps  
+steps:
+  notify_on_success:
+    parameters:
+      notify_on_success: False
+
+# configuration of the Model Control Plane
 model_config:
   name: {{ product_name }}
   version: {{ target_environment }}
+
+# pipeline level extra configurations
+extra:
+  notify_on_failure: True
+

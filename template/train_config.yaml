@@ -1,5 +1,6 @@
 # {% include 'template/license_header' %}
 
+# environment configuration
 settings:
   docker:
     required_integrations:
@@ -12,18 +13,51 @@ settings:
       - mlflow
       - sklearn
       - slack
-extra:
-  mlflow_model_name: {{ product_name }}
-{%- if target_environment == 'production' %}
-  target_env: Production
-{%- else %}
-  target_env: Staging
+
+# configuration of steps  
+steps:
+  model_trainer:
+    parameters:
+      name: {{ product_name }}
+{%- if hyperparameters_tuning %}
+  compute_performance_metrics_on_current_data:
+    parameters:
+      target_env: {{ target_environment }}
+  promote_with_metric_compare:
+    parameters:
+      mlflow_model_name: {{ product_name }}
+      target_env: {{ target_environment }}
 {%- endif %}
-  notify_on_success: False
+  notify_on_success:
+    parameters:
+      notify_on_success: False
+
+# configuration of the Model Control Plane
+model_config:
+  name: {{ product_name }}
+  license: {{ open_source_license }}
+  description: {{ product_name }} E2E Batch Use Case
+  audience: All ZenML users
+  use_cases: |
+    The {{project_name}} project demonstrates how the most important steps of 
+    the ML Production Lifecycle can be implemented in a reusable way remaining 
+    agnostic to the underlying infrastructure, and shows how to integrate them together 
+    into pipelines for Training and Batch Inference purposes.
+  ethics: No impact.
+  tags:
+  - e2e
+  - batch
+  - sklearn
+  - from template
+  - ZenML delivered
+  create_new_model_version: true
+
+# pipeline level extra configurations
+extra:
   notify_on_failure: True
 {%- if hyperparameters_tuning %}
-  # This set contains all the models that you want to evaluate
-  # during hyperparameter tuning stage.
+  # This set contains all the model configurations that you want 
+  # to evaluate during hyperparameter tuning stage.
   model_search_space:
     random_forest:
       model_package: sklearn.ensemble
@@ -67,7 +101,7 @@ extra:
             start: 1
             end: 10
 {%- else %}
-    # This model configuration will be used for the training stage.
+  # This model configuration will be used for the training stage.
   model_configuration:
     model_package: sklearn.tree
     model_class: DecisionTreeClassifier
@@ -76,21 +110,3 @@ extra:
       max_depth: 5
       min_samples_leaf: 3
 {%- endif %}
-model_config:
-  name: {{ product_name }}
-  license: {{ open_source_license }}
-  description: {{ product_name }} E2E Batch Use Case
-  audience: All ZenML users
-  use_cases: |
-    The {{project_name}} project demonstrates how the most important steps of 
-    the ML Production Lifecycle can be implemented in a reusable way remaining 
-    agnostic to the underlying infrastructure, and shows how to integrate them together 
-    into pipelines for Training and Batch Inference purposes.
-  ethics: No impact.
-  tags:
-  - e2e
-  - batch
-  - sklearn
-  - from template
-  - ZenML delivered
-  create_new_model_version: true

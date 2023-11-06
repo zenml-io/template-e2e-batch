@@ -116,7 +116,6 @@ def {{product_name}}_training(
         model=ExternalArtifact(value=best_model),
 {%- endif %}
         target=target,
-        name=pipeline_extra["mlflow_model_name"],
     )
     model_evaluator(
         model=model,

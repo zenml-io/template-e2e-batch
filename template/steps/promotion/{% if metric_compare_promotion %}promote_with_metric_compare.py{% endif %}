@@ -62,7 +62,7 @@ def promote_with_metric_compare(
             )
             should_promote = False
 
-    promoted_version = current_version
+    promoted_version = get_model_registry_version(current_version)
     if should_promote:
         # Promote in Model Control Plane
         model_version.set_stage(stage=target_env, force=True)

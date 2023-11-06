@@ -159,6 +159,7 @@ def main(
 
         pipeline_args["config_path"] = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
+            "configs"
             "train_config.yaml",
         )
         pipeline_args[
@@ -171,6 +172,7 @@ def main(
     run_args_inference = {}
     pipeline_args["config_path"] = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
+        "configs",
         "inference_config.yaml",
     )
     pipeline_args[

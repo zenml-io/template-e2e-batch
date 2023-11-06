@@ -142,23 +142,24 @@ The project loosely follows [the recommended ZenML project structure](https://do
 
 ```
 .
-├── pipelines               # `zenml.pipeline` implementations
-│   ├── batch_inference.py  # [CD] Batch Inference pipeline
-│   └── training.py         # [CT] Training Pipeline
-├── steps                   # logically grouped `zenml.steps` implementations
-│   ├── alerts              # alert developer on pipeline status
-│   ├── data_quality        # quality gates built on top of drift report
-│   ├── etl                 # ETL logic for dataset
-│   ├── hp_tuning           # tune hyperparameters and model architectures
-│   ├── inference           # inference on top of the model from the registry
-│   ├── promotion           # find if a newly trained model will be new inference
-│   └── training            # train and evaluate model
-├── utils                   # helper functions
+├── configs                   # pipelines configuration files
+│   ├── inference_config.yaml # the configuration of the batch inference pipeline
+│   └── train_config.yaml     # the configuration of the training pipeline
+├── pipelines                 # `zenml.pipeline` implementations
+│   ├── batch_inference.py    # [CD] Batch Inference pipeline
+│   └── training.py           # [CT] Training Pipeline
+├── steps                     # logically grouped `zenml.steps` implementations
+│   ├── alerts                # alert developer on pipeline status
+│   ├── data_quality          # quality gates built on top of drift report
+│   ├── etl                   # ETL logic for dataset
+│   ├── hp_tuning             # tune hyperparameters and model architectures
+│   ├── inference             # inference on top of the model from the registry
+│   ├── promotion             # find if a newly trained model will be new inference
+│   └── training              # train and evaluate model
+├── utils                     # helper functions
 ├── .dockerignore
-├── inference_config.yaml   # the configuration of the batch inference pipeline
-├── Makefile                # helper scripts for quick start with integrations
-├── README.md               # this file
-├── requirements.txt        # extra Python dependencies 
-├── run.py                  # CLI tool to run pipelines on ZenML Stack
-└── train_config.yaml       # the configuration of the training pipeline
+├── Makefile                  # helper scripts for quick start with integrations
+├── README.md                 # this file
+├── requirements.txt          # extra Python dependencies 
+└── run.py                    # CLI tool to run pipelines on ZenML Stack
 ```

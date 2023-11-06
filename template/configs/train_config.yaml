@@ -24,10 +24,12 @@ steps:
     parameters:
       target_env: {{ target_environment }}
   promote_with_metric_compare:
+{%- else %}
+  promote_latest_version:
+{%- endif %}
     parameters:
       mlflow_model_name: {{ product_name }}
       target_env: {{ target_environment }}
-{%- endif %}
   notify_on_success:
     parameters:
       notify_on_success: False

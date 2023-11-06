@@ -7,23 +7,26 @@ to top it all off, a simple but useful CLI. This is exactly
 what the ZenML templates are all about.
 
 This project template is a great starting point for anyone looking to deepen their knowledge of ZenML.
-It consists of two pipelines with the following high-level setup:
+It consists of three pipelines with the following high-level setup:
 <p align="center">
-  <img height=300 src="template/.assets/00_pipelines_composition.png">
+  <img height=500 src="template/.assets/00_pipelines_composition.png">
 </p>
 
-Both pipelines are inside a shared Model Control Plane model context - training pipeline creates and promotes new Model Control Plane version and inference pipeline is reading from inference Model Control Plane version. This makes those pipelines closely connected, while ensuring that only quality assured Model Control Plane versions are used to produce predictions delivered to stakeholders.
+All pipelines are leveraging the Model Control Plane to bring all parts together - the training pipeline creates and promotes a new Model Control Plane version with a trained model object in it, deployment pipeline uses the inference Model Control Plane version (the one promoted during training) to create a deployment service and inference pipeline using deployment service from the inference Model Control Plane version and store back new set of predictions as a versioned data artifact for future use. This makes those pipelines closely connected while ensuring that only quality-assured Model Control Plane versions are used to produce predictions delivered to stakeholders.
 * [CT] Training
   * Load, split, and preprocess the training dataset
   * Search for an optimal model object architecture and tune its hyperparameters
   * Train the model object and evaluate its performance on the holdout set
   * Compare a recently trained model object with one promoted earlier
-  * If a recently trained model object performs better, then stage it as a new inference model in the Model Control Plane
+  * If a recently trained model object performs better - stage it as a new inference model object in model registry
+  * On success of the current model object - stage newly created Model Control Plane version as the one used for inference
+* [CD] Deployment
+  * Deploy a new prediction service based on the model object connected to the inference Model Control Plane version.
 * [CD] Batch Inference
   * Load the inference dataset and preprocess it reusing object fitted during training
   * Perform data drift analysis reusing training dataset of the inference Model Control Plane version as a reference
   * Run predictions using a model object from the inference Model Control Plane version
-  * Store predictions as a versioned artifact and link it to the inference Model Control Plane version
+  * Store predictions as an versioned artifact and link it to the inference Model Control Plane version
 
 It showcases the core ZenML concepts for supervised ML with batch predictions:
 
@@ -231,6 +234,27 @@ To achieve this we would retrieve the model version from the Model Control Plane
 
 By doing so we ensure that the best-performing version will be used for inference later on and ensure seamless integration of relevant artifacts from the training pipeline in the batch inference pipeline.
 
+### [Continuous Deployment] Deployment
+
+The Deployment pipeline is designed to run with inference Model Control Plane version context. This ensures that we always infer only on quality-assured Model Control Plane version and provide seamless integration of required artifacts created during training of this Model Control Plane version.
+This is achieved by providing this configuration in `deployer_config.yaml` used to configure our pipeline:
+```yaml
+model_config:
+  name: your_product_name
+  version: production
+```
+
+<p align="center">
+  <img height=500 src="assets/05_deployment.png">
+</p>
+
+The deployment pipeline takes the model object trained earlier from the inference Model Control Plane version and produces a prediction service, which can be used by external tools or by another pipeline. In this case it will be used by a batch prediction pipeline later on. Prepared prediction service is linked to the same inference Model Control Plane version.
+
+```
+NOTE: In this template a prediction service is only created for local orchestrators, but you can redefine step definition to fit the needs of your infrastructure.
+```
+
+
 ### [Continuous Deployment] Batch Inference
 The Batch Inference pipeline is designed to run with inference Model Control Plane version context. This ensures that we always infer only on quality-assured Model Control Plane version and provide seamless integration of required artifacts created during training of this Model Control Plane version.
 This is achieved by providing this configuration in `inference_config.yaml` used to configure our pipeline:
@@ -241,7 +265,7 @@ model_config:
 ```
 
 <p align="center">
-  <img height=500 src="assets/05_batch_inference.png">
+  <img height=500 src="assets/06_batch_inference.png">
 </p>
 
 ### [Continuous Deployment] Batch Inference: ETL Steps
@@ -286,7 +310,12 @@ You can follow [Data Validators docs](https://docs.zenml.io/stacks-and-component
 
 As a last step concluding all work done so far, we will calculate predictions on the inference dataset and persist them in [Artifact Store](https://docs.zenml.io/stacks-and-components/component-guide/artifact-stores) attached to the current inference model version of the Model Control Plane for reuse and observability.
 
-We will leverage metadata of `model` artifact linked to the inference model version of the Model Control Plane to create a deployment service and run `.predict()` to put those predictions as an output of the predictions step, so it is automatically stored in the [Artifact Store](https://docs.zenml.io/stacks-and-components/component-guide/artifact-stores) and linked to the Model Control Plane model version as a versioned artifact link with zero effort. This is achieved because we additionally annotated the `predictions` output with `ArtifactConfig(overwrite=False)`. This is required to deliver a comprehensive history to stakeholders since Batch Inference can be executed using the same Model Control Plane version multiple times.
+We will leverage a prepared predictions service called `mlflow_deployment` linked to the inference model version of the Model Control Plane to run `.predict()` and to put predictions as an output of the predictions step, so it is automatically stored in the [Artifact Store](https://docs.zenml.io/stacks-and-components/component-guide/artifact-stores) and linked to the Model Control Plane model version as a versioned artifact link with zero effort. This is achieved because we additionally annotated the `predictions` output with `ArtifactConfig(overwrite=False)`. This is required to deliver a comprehensive history to stakeholders since Batch Inference can be executed using the same Model Control Plane version multiple times.
+
+```
+NOTE: On non-local orchestrators a `model` artifact will be loaded into memory to run predictions directly. You can adapt this part to your needs.
+```
+
 <details>
   <summary>Code snippet 💻</summary>
 

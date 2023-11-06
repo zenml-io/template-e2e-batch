@@ -6,10 +6,8 @@ from typing_extensions import Annotated
 import pandas as pd
 from sklearn.metrics import accuracy_score
 from zenml import step, get_step_context
-from zenml.integrations.mlflow.steps.mlflow_deployer import (
-    mlflow_model_registry_deployer_step,
-)
 from zenml.logger import get_logger
+from zenml.model import ModelConfig
 
 from utils import get_model_versions
 
@@ -50,20 +48,18 @@ def compute_performance_metrics_on_current_data(
     # Get model version numbers from Model Control Plane
     latest_version, current_version = get_model_versions(model_version, target_env)
 
+    # Get predictors
+    predictors = {
+        latest_version: model_version.get_model_object("model").load(),
+        current_version: ModelConfig(name=model_version.model.name,version=target_env)._get_model_version().get_model_object("model").load(),
+    }
+
     if latest_version != current_version:
         metrics = {}
         for version in [latest_version,current_version]:
-            # deploy predictor service
-            deployment_service = mlflow_model_registry_deployer_step.entrypoint(
-                registry_model_name=pipeline_extra["mlflow_model_name"],
-                registry_model_version=version,
-                replace_existing=True,
-            )
-
             # predict and evaluate
-            predictions = deployment_service.predict(request=X)
+            predictions = predictors[version].predict(X)
             metrics[version]=accuracy_score(y, predictions)
-            deployment_service.deprovision(force=True)
     else:
         metrics = {latest_version:1.0,current_version:0.0}
     ### YOUR CODE ENDS HERE ###

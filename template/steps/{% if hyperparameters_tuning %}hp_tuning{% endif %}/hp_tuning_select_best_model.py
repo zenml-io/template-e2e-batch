@@ -15,7 +15,7 @@ logger = get_logger(__name__)
 def hp_tuning_select_best_model() -> Annotated[ClassifierMixin, "best_model"]:
     """Find best model across all HP tuning attempts.
 
-    This is an example of a model hyperparameter tuning step that loops 
+    This is an example of a model hyperparameter tuning step that loops
     other artifacts linked to model version in Model Control Plane to find
     the best hyperparameter tuning output model of all according to the metric.
 

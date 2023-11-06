@@ -17,7 +17,7 @@ def get_model_versions(
 
     Args:
         target_env: Target stage to search for currently promoted version
-    
+
     Returns:
         Latest and currently promoted model versions from the Model Control Plane
     """
@@ -31,10 +31,13 @@ def get_model_versions(
 
     return latest_version, current_version
 
+
 def get_model_registry_version(model_version: ModelVersionResponseModel):
     """Get model version in model registry from metadata of a model in the Model Control Plane.
 
     Args:
         model_version: the Model Control Plane version response
     """
-    return model_version.get_model_object("model").metadata["model_registry_version"].value
+    return (
+        model_version.get_model_object("model").metadata["model_registry_version"].value
+    )

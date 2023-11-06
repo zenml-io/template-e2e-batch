@@ -14,6 +14,7 @@ from zenml.integrations.mlflow.services.mlflow_deployment import (
 
 logger = get_logger(__name__)
 
+
 @step
 def inference_predict(
     dataset_inf: pd.DataFrame,
@@ -40,12 +41,17 @@ def inference_predict(
     model_version = get_step_context().model_config._get_model_version()
 
     # get predictor
-    predictor_service:Optional[MLFlowDeploymentService] = model_version.get_deployment("mlflow_deployment").load()
+    predictor_service: Optional[MLFlowDeploymentService] = model_version.get_deployment(
+        "mlflow_deployment"
+    ).load()
     if predictor_service is not None:
         # run prediction from service
         predictions = predictor_service.predict(request=dataset_inf)
     else:
-        logger.warning("Predicting from loaded model instead of deployment service as the orchestrator is not local.")
+        logger.warning(
+            "Predicting from loaded model instead of deployment service "
+            "as the orchestrator is not local."
+        )
         # run prediction from memory
         predictor = model_version.get_model_object("model").load()
         predictions = predictor.predict(dataset_inf)

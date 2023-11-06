@@ -18,8 +18,15 @@ from utils import get_model_registry_version
 
 logger = get_logger(__name__)
 
+
 @step
-def deployment_deploy() -> Annotated[Optional[MLFlowDeploymentService], "mlflow_deployment", DeploymentArtifactConfig()]:
+def deployment_deploy() -> (
+    Annotated[
+        Optional[MLFlowDeploymentService],
+        "mlflow_deployment",
+        DeploymentArtifactConfig(),
+    ]
+):
     """Predictions step.
 
     This is an example of a predictions step that takes the data in and returns

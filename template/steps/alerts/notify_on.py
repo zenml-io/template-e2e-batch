@@ -35,9 +35,7 @@ def notify_on_failure() -> None:
 
 
 @step(enable_cache=False)
-def notify_on_success(
-    notify_on_success: bool
-) -> None:
+def notify_on_success(notify_on_success: bool) -> None:
     """Notifies user on pipeline success."""
     if alerter and notify_on_success:
         alerter.post(message=build_message(status="succeeded"))

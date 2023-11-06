@@ -33,7 +33,7 @@ def {{product_name}}_batch_inference():
     ########## ETL stage  ##########
     df_inference, target, _ = data_loader(
         random_state=ExternalArtifact(
-            model_artifact_pipeline_name="e2e_use_case_training",
+            model_artifact_pipeline_name="{{product_name}}_training",
             model_artifact_name="random_state",
         ),
         is_inference=True

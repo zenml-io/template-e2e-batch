@@ -19,7 +19,7 @@ steps:
   model_trainer:
     parameters:
       name: {{ product_name }}
-{%- if hyperparameters_tuning %}
+{%- if metric_compare_promotion %}
   compute_performance_metrics_on_current_data:
     parameters:
       target_env: {{ target_environment }}

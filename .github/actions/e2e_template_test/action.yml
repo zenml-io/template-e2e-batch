@@ -20,10 +20,6 @@ inputs:
     required: false
     default: '3.9'
 
-env:
-  # fork fix for macos
-  OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
-
 runs:
   using: "composite"
   steps:

@@ -106,7 +106,7 @@ and Continuous Delivery (CD).
 
 It consists of three pipelines with the following high-level setup:
 <p align="center">
-  <img height=500 src=".assets/00_pipelines_composition.png">
+  <img height=800 src=".assets/00_pipelines_composition.png">
 </p>
 
 All pipelines are leveraging the Model Control Plane to bring all parts together - the training pipeline creates and promotes a new Model Control Plane version with a trained model object in it, deployment pipeline uses the inference Model Control Plane version (the one promoted during training) to create a deployment service and inference pipeline using deployment service from the inference Model Control Plane version and store back new set of predictions as a versioned data artifact for future use. This makes those pipelines closely connected while ensuring that only quality-assured Model Control Plane versions are used to produce predictions delivered to stakeholders.

@@ -9,7 +9,7 @@ what the ZenML templates are all about.
 This project template is a great starting point for anyone looking to deepen their knowledge of ZenML.
 It consists of three pipelines with the following high-level setup:
 <p align="center">
-  <img height=500 src="template/.assets/00_pipelines_composition.png">
+  <img height=800 src="template/.assets/00_pipelines_composition.png">
 </p>
 
 All pipelines are leveraging the Model Control Plane to bring all parts together - the training pipeline creates and promotes a new Model Control Plane version with a trained model object in it, deployment pipeline uses the inference Model Control Plane version (the one promoted during training) to create a deployment service and inference pipeline using deployment service from the inference Model Control Plane version and store back new set of predictions as a versioned data artifact for future use. This makes those pipelines closely connected while ensuring that only quality-assured Model Control Plane versions are used to produce predictions delivered to stakeholders.
@@ -104,7 +104,7 @@ model_config:
 
 [📂 Code folder](template/steps/etl/)
 <p align="center">
-  <img height=500 src="assets/01_etl.png">
+  <img height=700 src="assets/01_etl.png">
 </p>
 
 Usually at the very beginning of every training pipeline developers are acquiring data to work with in later stages. In this example, we are using [the Breast Cancer Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) to showcase steps but avoid high computational costs.
@@ -117,7 +117,7 @@ We also output `preprocess_pipeline` as an output artifact from `train_data_prep
 
 [📂 Code folder](template/steps/%7B%25%20if%20hyperparameters_tuning%20%25%7Dhp_tuning%7B%25%20endif%20%25%7D)
 <p align="center">
-  <img height=400 src="assets/02_hp.png">
+  <img height=500 src="assets/02_hp.png">
 </p>
 
 To ensure the high quality of ML models many ML Engineers go for automated hyperparameter tuning or even automated model architecture search. In this example, we are using prepared data from ETL to spin up a search of the best model parameters for different architectures in parallel.
@@ -175,7 +175,7 @@ You can find more information about the current state of [Hyperparameter Tuning 
 
 [📂 Code folder](template/steps/training/)
 <p align="center">
-  <img height=500 src="assets/03_train.png">
+  <img height=400 src="assets/03_train.png">
 </p>
 
 Having the best model architecture and its hyperparameters defined in the previous section makes it possible to train a quality model object. Also, model training is the right place to bring an [Experiment Tracker](https://docs.zenml.io/stacks-and-components/component-guide/experiment-trackers) into the picture - we will log all metrics and model object itself into the [Experiment Tracker](https://docs.zenml.io/stacks-and-components/component-guide/experiment-trackers), so we can register our model object in a [Model Registry](https://docs.zenml.io/stacks-and-components/component-guide/model-registries) and pass it down to a [Model Deployer](https://docs.zenml.io/stacks-and-components/component-guide/model-deployers) easily and traceable. We will use information from the active stack to make the implementation agnostic of the underlying infrastructure.
@@ -223,7 +223,7 @@ def e2e_example_training(...):
 
 [📂 Code folder](template/steps/promotion/)
 <p align="center">
-  <img height=500 src="assets/04_promotion.png">
+  <img height=300 src="assets/04_promotion.png">
 </p>
 
 Once the model object is trained and evaluated on meeting basic quality standards, we would like to understand whether it is good enough to beat the existing model object used in inference. This is a very important step, as promoting a weak model object as inference might have a huge negative impact.
@@ -265,7 +265,7 @@ model_config:
 ```
 
 <p align="center">
-  <img height=500 src="assets/06_batch_inference.png">
+  <img height=900 src="assets/06_batch_inference.png">
 </p>
 
 ### [Continuous Deployment] Batch Inference: ETL Steps

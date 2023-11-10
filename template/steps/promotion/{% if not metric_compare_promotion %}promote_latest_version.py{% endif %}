@@ -1,0 +1,39 @@
+# {% include 'template/license_header' %}
+
+from zenml import get_step_context, step
+from zenml.logger import get_logger
+
+from utils import get_model_versions, promote_in_model_registry, get_model_registry_version
+
+logger = get_logger(__name__)
+
+
+@step
+def promote_latest_version(
+    mlflow_model_name: str,
+    target_env: str
+) -> None:
+    """Promote latest trained model.
+
+    This is an example of a model promotion step, which promotes the
+    latest trained model to the current version.
+    """
+
+    ### ADD YOUR OWN CODE HERE - THIS IS JUST AN EXAMPLE ###
+    # Get model version numbers from Model Control Plane
+    latest_version, current_version = get_model_versions(target_env)
+    logger.info(f"Promoting latest model version `{latest_version}`")
+
+    # Promote in Model Control Plane
+    model_version = get_step_context().model_config._get_model_version()
+    model_version.set_stage(stage=target_env, force=True)
+    logger.info(f"Current model version was promoted to '{target_env}'.")
+    
+    # Promote in Model Registry
+    promote_in_model_registry(
+        latest_version=get_model_registry_version(latest_version),
+        current_version=get_model_registry_version(current_version),
+        model_name=mlflow_model_name,
+        target_env=target_env.capitalize(),
+    )
+    ### YOUR CODE ENDS HERE ###

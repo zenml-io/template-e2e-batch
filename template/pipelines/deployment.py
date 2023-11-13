@@ -1,7 +1,6 @@
 # {% include 'template/license_header' %}
 
-from steps import deployment_deploy,notify_on_success,notify_on_failure
-
+from steps import deployment_deploy, notify_on_failure, notify_on_success
 from zenml import pipeline
 
 

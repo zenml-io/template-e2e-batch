@@ -1,9 +1,10 @@
 # {% include 'template/license_header' %}
 
 from zenml import get_step_context, step
+from zenml.model import ModelVersion
 from zenml.logger import get_logger
 
-from utils import get_model_versions, promote_in_model_registry, get_model_registry_version
+from utils import promote_in_model_registry
 
 logger = get_logger(__name__)
 
@@ -21,18 +22,24 @@ def promote_latest_version(
 
     ### ADD YOUR OWN CODE HERE - THIS IS JUST AN EXAMPLE ###
     # Get model version numbers from Model Control Plane
-    latest_version, current_version = get_model_versions(target_env)
+    latest_version = get_step_context().model_version
+    current_version = ModelVersion(name=latest_version.name, version=target_env)
     logger.info(f"Promoting latest model version `{latest_version}`")
 
     # Promote in Model Control Plane
-    model_version = get_step_context().model_config._get_model_version()
+    model_version = get_step_context().model_version
     model_version.set_stage(stage=target_env, force=True)
     logger.info(f"Current model version was promoted to '{target_env}'.")
     
     # Promote in Model Registry
+    latest_version_model_registry_number = latest_version.get_model_artifact("model").metadata["model_registry_version"].value
+    if current_version.number is None:
+        current_version_model_registry_number = latest_version_model_registry_number
+    else:
+        current_version_model_registry_number = current_version.get_model_artifact("model").metadata["model_registry_version"].value
     promote_in_model_registry(
-        latest_version=get_model_registry_version(latest_version),
-        current_version=get_model_registry_version(current_version),
+        latest_version=latest_version_model_registry_number,
+        current_version=current_version_model_registry_number,
         model_name=mlflow_model_name,
         target_env=target_env.capitalize(),
     )

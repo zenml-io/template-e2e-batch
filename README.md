@@ -94,10 +94,8 @@ We will be going section by section diving into implementation details and shari
 Training pipeline is designed to create a new Model Control Plane version and promote it to inference stage upon successfully passing the quality assurance at the end of the pipeline. This ensures that we always infer only on quality-assured Model Control Plane version and provides a seamless integration of required artifacts of this Model Control Plane version later on inference runs.
 This is achieved by providing this configuration in `train_config.yaml` used to configure our pipeline:
 ```yaml
-model_config:
+model_version:
   name: your_product_name
-  ...
-  create_new_model_version: true
 ```
 
 ### [Continuous Training] Training Pipeline: ETL steps
@@ -145,20 +143,20 @@ After the steps are executed we need to collect results (one best model per each
 ```python
 from zenml import get_step_context
 
-model_version = get_step_context().model_config._get_model_version()
+model_version = get_step_context().model_version
 
 best_model = None
 best_metric = -1
 # consume artifacts attached to current model version in Model Control Plane
-for full_artifact_name in model_version.artifact_object_ids:
-    # if artifacts comes from one of HP tuning steps
-    if full_artifact_name.endswith("hp_result"):
-        hp_output = model_version.artifacts[full_artifact_name]["1"]
-        model: ClassifierMixin = hp_output.load()
-        # fetch metadata we attached earlier
-        metric = float(hp_output.metadata["metric"].value)
-        if best_model is None or best_metric < metric:
-            best_model = model
+for step_name in step_names:
+    hp_output = model_version.get_data_artifact(
+        step_name=step_name, name="hp_result"
+    )
+    model: ClassifierMixin = hp_output.load()
+    # fetch metadata we attached earlier
+    metric = float(hp_output.metadata["metric"].value)
+    if best_model is None or best_metric < metric:
+        best_model = model
 ```
 </details>
 
@@ -239,7 +237,7 @@ By doing so we ensure that the best-performing version will be used for inferenc
 The Deployment pipeline is designed to run with inference Model Control Plane version context. This ensures that we always infer only on quality-assured Model Control Plane version and provide seamless integration of required artifacts created during training of this Model Control Plane version.
 This is achieved by providing this configuration in `deployer_config.yaml` used to configure our pipeline:
 ```yaml
-model_config:
+model_version:
   name: your_product_name
   version: production
 ```
@@ -259,7 +257,7 @@ NOTE: In this template a prediction service is only created for local orchestrat
 The Batch Inference pipeline is designed to run with inference Model Control Plane version context. This ensures that we always infer only on quality-assured Model Control Plane version and provide seamless integration of required artifacts created during training of this Model Control Plane version.
 This is achieved by providing this configuration in `inference_config.yaml` used to configure our pipeline:
 ```yaml
-model_config:
+model_version:
   name: your_product_name
   version: production
 ```
@@ -324,10 +322,22 @@ from zenml.model import ArtifactConfig
 
 @step
 def inference_predict(
-    deployment_service: MLFlowDeploymentService,
     dataset_inf: pd.DataFrame,
 ) -> Annotated[pd.Series, "predictions", ArtifactConfig(overwrite=False)]:
-    predictions = deployment_service.predict(request=dataset_inf)
+    model_version = get_step_context().model_version
+
+    # get predictor
+    predictor_service: Optional[MLFlowDeploymentService] = model_version.get_endpoint_artifact(
+        "mlflow_deployment"
+    ).load()
+    if predictor_service is not None:
+        # run prediction from service
+        predictions = predictor_service.predict(request=dataset_inf)
+    else:
+        # run prediction from memory
+        predictor = model_version.get_model_artifact("model").load()
+        predictions = predictor.predict(dataset_inf)
+
     predictions = pd.Series(predictions, name="predicted")
     return predictions
 ```

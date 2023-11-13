@@ -5,12 +5,10 @@ from typing import Optional
 from typing_extensions import Annotated
 
 import pandas as pd
-from zenml import step, get_step_context
+from zenml import get_step_context, step
+from zenml.integrations.mlflow.services.mlflow_deployment import MLFlowDeploymentService
 from zenml.logger import get_logger
 from zenml.model import ArtifactConfig
-from zenml.integrations.mlflow.services.mlflow_deployment import (
-    MLFlowDeploymentService,
-)
 
 logger = get_logger(__name__)
 
@@ -38,10 +36,10 @@ def inference_predict(
         The predictions as pandas series
     """
     ### ADD YOUR OWN CODE HERE - THIS IS JUST AN EXAMPLE ###
-    model_version = get_step_context().model_config._get_model_version()
+    model_version = get_step_context().model_version
 
     # get predictor
-    predictor_service: Optional[MLFlowDeploymentService] = model_version.get_deployment(
+    predictor_service: Optional[MLFlowDeploymentService] = model_version.get_endpoint_artifact(
         "mlflow_deployment"
     ).load()
     if predictor_service is not None:
@@ -53,7 +51,7 @@ def inference_predict(
             "as the orchestrator is not local."
         )
         # run prediction from memory
-        predictor = model_version.get_model_object("model").load()
+        predictor = model_version.get_model_artifact("model").load()
         predictions = predictor.predict(dataset_inf)
 
     predictions = pd.Series(predictions, name="predicted")

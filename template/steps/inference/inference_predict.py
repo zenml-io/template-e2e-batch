@@ -8,7 +8,7 @@ import pandas as pd
 from zenml import get_step_context, step
 from zenml.integrations.mlflow.services.mlflow_deployment import MLFlowDeploymentService
 from zenml.logger import get_logger
-from zenml.model import ArtifactConfig
+from zenml.model import DataArtifactConfig
 
 logger = get_logger(__name__)
 
@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 @step
 def inference_predict(
     dataset_inf: pd.DataFrame,
-) -> Annotated[pd.Series, "predictions", ArtifactConfig(overwrite=False)]:
+) -> Annotated[pd.Series, "predictions", DataArtifactConfig(overwrite=False)]:
     """Predictions step.
 
     This is an example of a predictions step that takes the data in and returns

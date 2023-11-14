@@ -11,7 +11,7 @@ from zenml.integrations.mlflow.steps.mlflow_deployer import (
     mlflow_model_registry_deployer_step,
 )
 from zenml.logger import get_logger
-from zenml.model import DeploymentArtifactConfig
+from zenml.model import EndpointArtifactConfig
 
 logger = get_logger(__name__)
 
@@ -21,7 +21,7 @@ def deployment_deploy() -> (
     Annotated[
         Optional[MLFlowDeploymentService],
         "mlflow_deployment",
-        DeploymentArtifactConfig(),
+        EndpointArtifactConfig(),
     ]
 ):
     """Predictions step.

@@ -21,7 +21,7 @@ steps:
       notify_on_success: False
 
 # configuration of the Model Control Plane
-model_config:
+model_version:
   name: {{ product_name }}
   version: {{ target_environment }}
 

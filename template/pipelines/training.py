@@ -98,7 +98,7 @@ def {{product_name}}_training(
                 target=target,
             )
             after.append(step_name)
-    best_model = hp_tuning_select_best_model(after=after)
+    best_model = hp_tuning_select_best_model(step_names=after, after=after)
 {%- else %}
     model_configuration = pipeline_extra["model_configuration"]
     best_model = get_model_from_config(

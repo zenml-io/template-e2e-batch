@@ -2,10 +2,10 @@
 
 
 from typing import Tuple
-from typing_extensions import Annotated
 
 import pandas as pd
 from sklearn.datasets import load_breast_cancer
+from typing_extensions import Annotated
 from zenml import step
 from zenml.logger import get_logger
 

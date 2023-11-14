@@ -8,10 +8,9 @@ import pandas as pd
 from sklearn.base import ClassifierMixin
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import RandomizedSearchCV
-from zenml import step, log_artifact_metadata
-from zenml.logger import get_logger
-
 from utils import get_model_from_config
+from zenml import log_artifact_metadata, step
+from zenml.logger import get_logger
 
 logger = get_logger(__name__)
 

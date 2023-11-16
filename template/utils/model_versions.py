@@ -39,5 +39,5 @@ def get_model_registry_version(model_version: ModelVersionResponseModel):
         model_version: the Model Control Plane version response
     """
     return (
-        model_version.get_model_object("model").metadata["model_registry_version"].value
+        model_version.get_model_object("model").run_metadata["model_registry_version"].value
     )

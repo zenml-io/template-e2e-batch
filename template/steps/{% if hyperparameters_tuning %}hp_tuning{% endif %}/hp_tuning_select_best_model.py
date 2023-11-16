@@ -34,7 +34,7 @@ def hp_tuning_select_best_model() -> Annotated[ClassifierMixin, "best_model"]:
             hp_output = model_version.artifacts[full_artifact_name]["1"]
             model: ClassifierMixin = hp_output.load()
             # fetch metadata we attached earlier
-            metric = float(hp_output.metadata["metric"].value)
+            metric = float(hp_output.run_metadata["metric"].value)
             if best_model is None or best_metric < metric:
                 best_model = model
     ### YOUR CODE ENDS HERE ###

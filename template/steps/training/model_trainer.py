@@ -5,12 +5,11 @@ from typing_extensions import Annotated
 import mlflow
 import pandas as pd
 from sklearn.base import ClassifierMixin
-from zenml import log_artifact_metadata, step
+from zenml import ArtifactConfig, log_artifact_metadata, step
 from zenml.client import Client
 from zenml.integrations.mlflow.experiment_trackers import MLFlowExperimentTracker
 from zenml.integrations.mlflow.steps.mlflow_registry import mlflow_register_model_step
 from zenml.logger import get_logger
-from zenml.model import ModelArtifactConfig
 
 logger = get_logger(__name__)
 
@@ -31,7 +30,9 @@ def model_trainer(
     model: ClassifierMixin,
     target: str,
     name: str,
-) -> Annotated[ClassifierMixin, "model", ModelArtifactConfig()]:
+) -> Annotated[
+    ClassifierMixin, ArtifactConfig(name="model", is_model_artifact=True)
+]:
     """Configure and train a model on the training dataset.
 
     This is an example of a model training step that takes in a dataset artifact
@@ -79,12 +80,14 @@ def model_trainer(
         name=name,
     )
     # keep track of mlflow version for future use
-    log_artifact_metadata(
-        output_name="model",
-        model_registry_version=Client()
-        .active_stack.model_registry.list_model_versions(name=name)[-1]
-        .version,
-    )
+    model_registry = Client().active_stack.model_registry
+    if model_registry:
+        versions = model_registry.list_model_versions(name=name)
+        if versions:
+            log_artifact_metadata(
+                metadata={"model_registry_version": versions[-1].version},
+                artifact_name="model",
+            )
     ### YOUR CODE ENDS HERE ###
 
     return model

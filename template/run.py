@@ -192,15 +192,6 @@ def main(
     ] = f"{{product_name}}_batch_inference_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
     {{product_name}}_batch_inference.with_options(**pipeline_args)(**run_args_inference)
 
-    client = Client()
-    model_version = client.get_model_version("e2e_use_case", "staging")
-    artifact = model_version.get_data_artifact("predictions")
-    if artifact:
-        logger.info(
-            "Batch inference pipeline finished successfully! "
-            "You can find predictions in Artifact Store using ID: "
-            f"`{str(artifact.id)}`."
-        )
 
 
 if __name__ == "__main__":

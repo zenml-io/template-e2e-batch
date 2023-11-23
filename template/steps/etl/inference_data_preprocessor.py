@@ -6,7 +6,6 @@ from typing_extensions import Annotated
 import pandas as pd
 from sklearn.pipeline import Pipeline
 from zenml import step
-from zenml.model import DataArtifactConfig
 
 
 @step
@@ -14,11 +13,7 @@ def inference_data_preprocessor(
     dataset_inf: pd.DataFrame,
     preprocess_pipeline: Pipeline,
     target: str,
-) -> Annotated[
-    pd.DataFrame,
-    "dataset_inf",
-    DataArtifactConfig(overwrite=False, artifact_name="inference_dataset"),
-]:
+) -> Annotated[pd.DataFrame, "inference_dataset"]:
     """Data preprocessor step.
 
     This is an example of a data processor step that prepares the data so that

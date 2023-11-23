@@ -1,7 +1,7 @@
 # {% include 'template/license_header' %}
 
 from zenml import get_step_context, step
-from zenml.model import ModelVersion
+from zenml.model.model_version import ModelVersion
 from zenml.logger import get_logger
 
 from utils import promote_in_model_registry

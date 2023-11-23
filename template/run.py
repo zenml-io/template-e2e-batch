@@ -5,7 +5,7 @@ from datetime import datetime as dt
 import os
 from typing import Optional
 
-from zenml.artifacts.external_artifact import ExternalArtifact
+from zenml.client import Client
 from zenml.logger import get_logger
 
 from pipelines import {{product_name}}_batch_inference, {{product_name}}_training, {{product_name}}_deployment
@@ -192,17 +192,6 @@ def main(
     ] = f"{{product_name}}_batch_inference_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
     {{product_name}}_batch_inference.with_options(**pipeline_args)(**run_args_inference)
 
-    artifact = ExternalArtifact(
-        model_artifact_name="predictions",
-        model_name="{{ product_name }}",
-        model_version="{{ target_environment }}", 
-        model_artifact_version=None, # can be skipped - using latest artifact link
-    )
-    logger.info(
-        "Batch inference pipeline finished successfully! "
-        "You can find predictions in Artifact Store using ID: "
-        f"`{str(artifact.get_artifact_id())}`."
-    )
 
 
 if __name__ == "__main__":

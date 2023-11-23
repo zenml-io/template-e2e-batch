@@ -38,4 +38,5 @@ jobs:
         with:
           stack-name: ${{ matrix.stack-name }}
           python-version: ${{ matrix.python-version }}
-          ref-zenml: feature/OSS-2609-OSS-2575-model-config-is-model-version
+          ref-zenml: feature/OSS-2529-passing-pipeline-parameters-as-yaml-and-document
+          

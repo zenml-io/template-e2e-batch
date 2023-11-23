@@ -182,13 +182,15 @@ To make the most of the Model Control Plane we additionally annotate the output 
   <summary>Code snippet 💻</summary>
 
 ```python
-from zenml.model import ModelArtifactConfig
+from zenml import ArtifactConfig
 
 experiment_tracker = Client().active_stack.experiment_tracker
 @step(experiment_tracker=experiment_tracker.name)
 def model_trainer(
     ...
-) -> Annotated[ClassifierMixin, "model", ModelArtifactConfig()]:
+) -> Annotated[
+    ClassifierMixin, ArtifactConfig(name="model", is_model_artifact=True)
+]:
   ...
 ```
 </details>
@@ -308,7 +310,7 @@ You can follow [Data Validators docs](https://docs.zenml.io/stacks-and-component
 
 As a last step concluding all work done so far, we will calculate predictions on the inference dataset and persist them in [Artifact Store](https://docs.zenml.io/stacks-and-components/component-guide/artifact-stores) attached to the current inference model version of the Model Control Plane for reuse and observability.
 
-We will leverage a prepared predictions service called `mlflow_deployment` linked to the inference model version of the Model Control Plane to run `.predict()` and to put predictions as an output of the predictions step, so it is automatically stored in the [Artifact Store](https://docs.zenml.io/stacks-and-components/component-guide/artifact-stores) and linked to the Model Control Plane model version as a versioned artifact link with zero effort. This is achieved because we additionally annotated the `predictions` output with `DataArtifactConfig(overwrite=False)`. This is required to deliver a comprehensive history to stakeholders since Batch Inference can be executed using the same Model Control Plane version multiple times.
+We will leverage a prepared predictions service called `mlflow_deployment` linked to the inference model version of the Model Control Plane to run `.predict()` and to put predictions as an output of the predictions step, so it is automatically stored in the [Artifact Store](https://docs.zenml.io/stacks-and-components/component-guide/artifact-stores) and linked to the Model Control Plane model version as a versioned artifact link with zero effort.
 
 ```
 NOTE: On non-local orchestrators a `model` artifact will be loaded into memory to run predictions directly. You can adapt this part to your needs.
@@ -318,12 +320,10 @@ NOTE: On non-local orchestrators a `model` artifact will be loaded into memory t
   <summary>Code snippet 💻</summary>
 
 ```python
-from zenml.model import DataArtifactConfig
-
 @step
 def inference_predict(
     dataset_inf: pd.DataFrame,
-) -> Annotated[pd.Series, "predictions", DataArtifactConfig(overwrite=False)]:
+) -> Annotated[pd.Series, "predictions"]:
     model_version = get_step_context().model_version
 
     # get predictor

@@ -38,4 +38,4 @@ jobs:
         with:
           stack-name: ${{ matrix.stack-name }}
           python-version: ${{ matrix.python-version }}
-          ref-zenml: feature/OSS-2190-data-as-first-class-citizen
+          ref-zenml: feature/OSS-2574-add-metadata-to-model-versions

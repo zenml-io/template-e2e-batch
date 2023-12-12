@@ -38,4 +38,4 @@ jobs:
         with:
           stack-name: ${{ matrix.stack-name }}
           python-version: ${{ matrix.python-version }}
-          ref-zenml: feature/OSS-2529-passing-pipeline-parameters-as-yaml-and-document
+          ref-zenml: feature/OSS-2609-endpoint_artifacts_rename_new

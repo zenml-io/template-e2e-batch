@@ -5,7 +5,7 @@ from typing_extensions import Annotated
 import mlflow
 import pandas as pd
 from sklearn.base import ClassifierMixin
-from zenml import ArtifactConfig, log_artifact_metadata, step
+from zenml import ArtifactConfig, log_artifact_metadata, step, get_step_context
 from zenml.client import Client
 from zenml.integrations.mlflow.experiment_trackers import MLFlowExperimentTracker
 from zenml.integrations.mlflow.steps.mlflow_registry import mlflow_register_model_step
@@ -84,10 +84,8 @@ def model_trainer(
     if model_registry:
         versions = model_registry.list_model_versions(name=name)
         if versions:
-            log_artifact_metadata(
-                metadata={"model_registry_version": versions[-1].version},
-                artifact_name="model",
-            )
+            model_version = get_step_context().model_version
+            model_version.log_metadata({"model_registry_version": versions[-1].version})
     ### YOUR CODE ENDS HERE ###
 
     return model

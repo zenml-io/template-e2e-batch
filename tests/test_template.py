@@ -80,7 +80,7 @@ def generate_and_run_project(
     # MLFlow `service daemon is not running` error on MacOS
     if platform.system().lower() not in ["windows"]:
         # run the project
-        call = [sys.executable, "run.py"]
+        call = [sys.executable, "run.py", "--no-cache"]
 
         try:
             subprocess.check_output(

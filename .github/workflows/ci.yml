@@ -56,5 +56,5 @@ jobs:
         with:
           stack-name: ${{ matrix.stack-name }}
           python-version: ${{ matrix.python-version }}
-          ref-zenml: ${{ inputs.ref-zenml || 'feature/OSS-2609-endpoint_artifacts_rename_new' }}
+          ref-zenml: ${{ inputs.ref-zenml || 'feature/OSS-2713-model-links-lazy-evaluation-in-pipeline-code' }}
           ref-template: ${{ inputs.ref-template || github.ref }}

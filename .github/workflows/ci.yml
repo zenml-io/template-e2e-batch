@@ -56,5 +56,5 @@ jobs:
         with:
           stack-name: ${{ matrix.stack-name }}
           python-version: ${{ matrix.python-version }}
-          ref-zenml: ${{ inputs.ref-zenml || 'feature/OSS-2713-model-links-lazy-evaluation-in-pipeline-code' }}
+          ref-zenml: ${{ inputs.ref-zenml || 'feature/OSSK-358-add-zenml-model-versions-list-to-cli' }}
           ref-template: ${{ inputs.ref-template || github.ref }}

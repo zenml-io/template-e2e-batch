@@ -30,9 +30,7 @@ def model_trainer(
     model: ClassifierMixin,
     target: str,
     name: str,
-) -> Annotated[
-    ClassifierMixin, ArtifactConfig(name="model", is_model_artifact=True)
-]:
+) -> Annotated[ClassifierMixin, ArtifactConfig(name="model", is_model_artifact=True)]:
     """Configure and train a model on the training dataset.
 
     This is an example of a model training step that takes in a dataset artifact
@@ -82,10 +80,10 @@ def model_trainer(
     # keep track of mlflow version for future use
     model_registry = Client().active_stack.model_registry
     if model_registry:
-        versions = model_registry.list_model_versions(name=name)
-        if versions:
+        version = model_registry.get_latest_model_version(name=name, stage=None)
+        if version:
             model_ = get_step_context().model
-            model_.log_metadata({"model_registry_version": versions[-1].version})
+            model_.log_metadata({"model_registry_version": version.version})
     ### YOUR CODE ENDS HERE ###
 
     return model

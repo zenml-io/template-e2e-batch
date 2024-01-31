@@ -274,18 +274,18 @@ model:
 
 The process of loading data is similar to training, even the same step function is used, but with the `is_inference` flag.
 
-But inference flow has an important difference - there is no need to fit preprocessing sklearn `Pipeline`, rather we need to reuse one fitted during training on the train set, to ensure that the model object gets the expected input. To do so we will use [ExternalArtifact](https://docs.zenml.io/user-guide/advanced-guide/pipelining-features/configure-steps-pipelines#pass-any-kind-of-data-to-your-steps) with lookup by `model_artifact_name` only to get the preprocessing pipeline fitted during the quality-assured training run. This is possible since we configured the batch inference pipeline to run inside a Model Control Plane version context.
+But inference flow has an important difference - there is no need to fit preprocessing sklearn `Pipeline`, rather we need to reuse one fitted during training on the train set, to ensure that the model object gets the expected input. To do so we will use the [Model interface](https://docs.zenml.io/user-guide/starter-guide/track-ml-models#configuring-a-model-in-a-pipeline) with lookup by artifact name inside a model context to get the preprocessing pipeline fitted during the quality-assured training run. This is possible since we configured the batch inference pipeline to run inside a Model Control Plane version context.
 <details>
   <summary>Code snippet 💻</summary>
 
 ```python
+model = get_pipeline_context().model
 ########## ETL stage  ##########
 df_inference, target = data_loader(is_inference=True)
 df_inference = inference_data_preprocessor(
     dataset_inf=df_inference,
-    preprocess_pipeline=ExternalArtifact(
-      model_artifact_name="preprocess_pipeline",
-    ), # this fetches artifact using Model Control Plane
+    # this fetches artifact using Model Control Plane
+    preprocess_pipeline=model.get_artifact("preprocess_pipeline"), 
     target=target,
 )
 ```
@@ -298,7 +298,7 @@ df_inference = inference_data_preprocessor(
 
 In the drift reporting stage, we will use [standard step](https://docs.zenml.io/stacks-and-components/component-guide/data-validators/evidently#the-evidently-data-validator) `evidently_report_step` to build Evidently report to assess certain data quality metrics. `evidently_report_step` has a number of options, but for this example, we will build only `DataQualityPreset` metrics preset to get a number of NA values in reference and current datasets.
 
-We pass `dataset_trn` from the training pipeline as a `reference_dataset` here. To do so we will use [ExternalArtifact](https://docs.zenml.io/user-guide/advanced-guide/pipelining-features/configure-steps-pipelines#pass-any-kind-of-data-to-your-steps) with lookup by `model_artifact_name` only to get the training dataset used during quality-assured training run. This is possible since we configured the batch inference pipeline to run inside a Model Control Plane version context.
+We pass `dataset_trn` from the training pipeline as a `reference_dataset` here. To do so we will use the [Model interface](https://docs.zenml.io/user-guide/starter-guide/track-ml-models#configuring-a-model-in-a-pipeline) with lookup by artifact name inside a model context to get the training dataset used during quality-assured training run. This is possible since we configured the batch inference pipeline to run inside a Model Control Plane version context.
 
 After the report is built we execute another quality gate using the `drift_quality_gate` step, which assesses if a significant drift in the NA count is observed. If so, execution is stopped with an exception.
 

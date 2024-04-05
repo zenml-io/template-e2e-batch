@@ -47,6 +47,7 @@ jobs:
       ZENML_LOGGING_VERBOSITY: INFO
       # fork fix for macos
       OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
+      UV_HTTP_TIMEOUT: '1500'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3

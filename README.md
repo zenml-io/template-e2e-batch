@@ -34,7 +34,7 @@ It showcases the core ZenML concepts for supervised ML with batch predictions:
 * using [step parameterization](https://docs.zenml.io/user-guide/starter-guide/create-an-ml-pipeline#parametrizing-a-step)
  and [step caching](https://docs.zenml.io/user-guide/starter-guide/cache-previous-executions#caching-at-a-step-level)
 to design flexible and reusable steps
-* using [custom data types for your artifacts and writing materializers for them](https://docs.zenml.io/user-guide/advanced-guide/artifact-management/handle-custom-data-types)
+* using [custom data types for your artifacts and writing materializers for them](https://docs.zenml.io/how-to/handle-data-artifacts/handle-custom-data-types)
 * constructing and running a [ZenML pipeline](https://docs.zenml.io/user-guide/starter-guide/create-an-ml-pipeline)
 * usage of ZenML Model Control Plane
 * best practices for implementing and running reproducible and reliable ML
@@ -165,7 +165,7 @@ To ensure that collection goes smoothly and in full we use an `after` statement 
 
 
 
-You can find more information about the current state of [Hyperparameter Tuning using ZenML in the documentation](https://docs.zenml.io/user-guide/advanced-guide/pipelining-features/hyper-parameter-tuning).
+You can find more information about the current state of [Hyperparameter Tuning using ZenML in the documentation](https://docs.zenml.io/how-to/build-pipelines/hyper-parameter-tuning).
 
 
 
@@ -176,7 +176,7 @@ You can find more information about the current state of [Hyperparameter Tuning 
   <img height=400 src="assets/03_train.png">
 </p>
 
-Having the best model architecture and its hyperparameters defined in the previous section makes it possible to train a quality model object. Also, model training is the right place to bring an [Experiment Tracker](https://docs.zenml.io/stacks-and-components/component-guide/experiment-trackers) into the picture - we will log all metrics and model object itself into the [Experiment Tracker](https://docs.zenml.io/stacks-and-components/component-guide/experiment-trackers), so we can register our model object in a [Model Registry](https://docs.zenml.io/stacks-and-components/component-guide/model-registries) and pass it down to a [Model Deployer](https://docs.zenml.io/stacks-and-components/component-guide/model-deployers) easily and traceable. We will use information from the active stack to make the implementation agnostic of the underlying infrastructure.
+Having the best model architecture and its hyperparameters defined in the previous section makes it possible to train a quality model object. Also, model training is the right place to bring an [Experiment Tracker](https://docs.zenml.io/stack-components/experiment-trackers) into the picture - we will log all metrics and model object itself into the [Experiment Tracker](https://docs.zenml.io/stack-components/experiment-trackers), so we can register our model object in a [Model Registry](https://docs.zenml.io/stack-components/model-registries) and pass it down to a [Model Deployer](https://docs.zenml.io/stack-components/model-deployers) easily and traceable. We will use information from the active stack to make the implementation agnostic of the underlying infrastructure.
 To make the most of the Model Control Plane we additionally annotate the output model object as a Model Artifact, and by doing so it will be properly categorized for future use and get additional model object-specific features.
 <details>
   <summary>Code snippet 💻</summary>
@@ -196,7 +196,7 @@ def model_trainer(
 </details>
 Even knowing that the hyperparameter tuning step happened we would like to ensure that our model object meets at least minimal quality standards; this quality gate is on the evaluation step. In case the model object is of low quality metric-wise an `Exception` will be raised and the pipeline will stop.
 
-To notify maintainers of our Model Control Plane model about failures or successful completion of a pipeline we use the active stack's [Alerter](https://docs.zenml.io/stacks-and-components/component-guide/alerters) component. For failures it is convenient to use pipeline hook `on_failure` and for successes, a step notifying about it added as a last step of the pipeline comes in handy.
+To notify maintainers of our Model Control Plane model about failures or successful completion of a pipeline we use the active stack's [Alerter](https://docs.zenml.io/stack-components/alerters) component. For failures it is convenient to use pipeline hook `on_failure` and for successes, a step notifying about it added as a last step of the pipeline comes in handy.
 <details>
   <summary>Code snippet 💻</summary>
 
@@ -230,7 +230,7 @@ Once the model object is trained and evaluated on meeting basic quality standard
 
 In this example, we are implementing promotion based on metric comparison to decide on the spot and avoid more complex approaches like Champion/Challengers shadow deployments. In other projects, other promotion techniques and strategies can be used.
 
-To achieve this we would retrieve the model version from the Model Control Plane: latest (the one we just trained) and current (the one having a proper tag). Next, we need to deploy both model objects using [Model Deployer](https://docs.zenml.io/stacks-and-components/component-guide/model-deployers) and run predictions on the testing set for both of them. Next, we select which one of the model registry versions has a better metric value. If the newly trained model is performing better we promote it to the inference stage in the Model Control Plane.
+To achieve this we would retrieve the model version from the Model Control Plane: latest (the one we just trained) and current (the one having a proper tag). Next, we need to deploy both model objects using [Model Deployer](https://docs.zenml.io/stack-components/model-deployers) and run predictions on the testing set for both of them. Next, we select which one of the model registry versions has a better metric value. If the newly trained model is performing better we promote it to the inference stage in the Model Control Plane.
 
 By doing so we ensure that the best-performing version will be used for inference later on and ensure seamless integration of relevant artifacts from the training pipeline in the batch inference pipeline.
 
@@ -296,21 +296,21 @@ df_inference = inference_data_preprocessor(
 
 [📂 Code folder](template/steps/%7B%25%20if%20data_quality_checks%20%25%7Ddata_quality%7B%25%20endif%20%25%7D)
 
-In the drift reporting stage, we will use [standard step](https://docs.zenml.io/stacks-and-components/component-guide/data-validators/evidently#the-evidently-data-validator) `evidently_report_step` to build Evidently report to assess certain data quality metrics. `evidently_report_step` has a number of options, but for this example, we will build only `DataQualityPreset` metrics preset to get a number of NA values in reference and current datasets.
+In the drift reporting stage, we will use [standard step](https://docs.zenml.io/stack-components/data-validators/evidently#the-evidently-data-validator) `evidently_report_step` to build Evidently report to assess certain data quality metrics. `evidently_report_step` has a number of options, but for this example, we will build only `DataQualityPreset` metrics preset to get a number of NA values in reference and current datasets.
 
 We pass `dataset_trn` from the training pipeline as a `reference_dataset` here. To do so we will use the [Model interface](https://docs.zenml.io/user-guide/starter-guide/track-ml-models#configuring-a-model-in-a-pipeline) with lookup by artifact name inside a model context to get the training dataset used during quality-assured training run. This is possible since we configured the batch inference pipeline to run inside a Model Control Plane version context.
 
 After the report is built we execute another quality gate using the `drift_quality_gate` step, which assesses if a significant drift in the NA count is observed. If so, execution is stopped with an exception.
 
-You can follow [Data Validators docs](https://docs.zenml.io/stacks-and-components/component-guide/data-validators) to get more inspiration on how and when to use drift detection in your pipelines.
+You can follow [Data Validators docs](https://docs.zenml.io/stack-components/data-validators) to get more inspiration on how and when to use drift detection in your pipelines.
 
 ### [Continuous Deployment] Batch Inference: Inference
 
 [📂 Code folder](template/steps/inference)
 
-As a last step concluding all work done so far, we will calculate predictions on the inference dataset and persist them in [Artifact Store](https://docs.zenml.io/stacks-and-components/component-guide/artifact-stores) attached to the current inference model version of the Model Control Plane for reuse and observability.
+As a last step concluding all work done so far, we will calculate predictions on the inference dataset and persist them in [Artifact Store](https://docs.zenml.io/stack-components/artifact-stores) attached to the current inference model version of the Model Control Plane for reuse and observability.
 
-We will leverage a prepared predictions service called `mlflow_deployment` linked to the inference model version of the Model Control Plane to run `.predict()` and to put predictions as an output of the predictions step, so it is automatically stored in the [Artifact Store](https://docs.zenml.io/stacks-and-components/component-guide/artifact-stores) and linked to the Model Control Plane model version as a versioned artifact link with zero effort.
+We will leverage a prepared predictions service called `mlflow_deployment` linked to the inference model version of the Model Control Plane to run `.predict()` and to put predictions as an output of the predictions step, so it is automatically stored in the [Artifact Store](https://docs.zenml.io/stack-components/artifact-stores) and linked to the Model Control Plane model version as a versioned artifact link with zero effort.
 
 ```
 NOTE: On non-local orchestrators a `model` artifact will be loaded into memory to run predictions directly. You can adapt this part to your needs.

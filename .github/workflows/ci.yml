@@ -57,5 +57,5 @@ jobs:
         with:
           stack-name: ${{ matrix.stack-name }}
           python-version: ${{ matrix.python-version }}
-          ref-zenml: ${{ inputs.ref-zenml || 'feature/PRD-566-dependency-cleanup' }}
+          ref-zenml: ${{ inputs.ref-zenml || 'bugfix/PRD-653-fix-models-linkage' }}
           ref-template: ${{ inputs.ref-template || github.ref }}

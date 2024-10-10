@@ -12,6 +12,10 @@ logger = get_logger(__name__)
 
 experiment_tracker = Client().active_stack.experiment_tracker
 
+if not experiment_tracker:
+    raise RuntimeError("Please add an experiment tracker to your stack in order to run the pipeline"
+                       "containing the `model_evaluator` step.")
+
 
 @step(experiment_tracker=experiment_tracker.name)
 def model_evaluator(

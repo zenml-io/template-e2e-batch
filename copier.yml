@@ -127,7 +127,7 @@ _tasks:
       echo "   # optional, provision default local stack"
       echo "   make install-stack-local"
       echo "   # optional, start ZenML Dashboard"
-      echo "   zenml up"
+      echo "   zenml login --local"
       echo "   python run.py"
       echo 
       echo "Next, you should take a look at the '{{ _copier_conf.dst_path }}/README.md' file in the generated project."

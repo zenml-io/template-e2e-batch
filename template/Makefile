@@ -2,7 +2,7 @@ stack_name ?= e2e_template_stack
 
 {%- if zenml_server_url != '' %}
 remote-login:
-	zenml login "{{zenml_server_url}}"
+	zenml connect --url "{{zenml_server_url}}"
 
 setup: remote-login
 {%- else %}

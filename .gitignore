@@ -163,3 +163,4 @@ cython_debug/
 .local/
 .ruff_cache/
 .DS_Store
+.idea

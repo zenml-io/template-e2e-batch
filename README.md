@@ -154,7 +154,7 @@ for step_name in step_names:
     )
     model: ClassifierMixin = hp_output.load()
     # fetch metadata we attached earlier
-    metric = float(hp_output.run_metadata["metric"].value)
+    metric = float(hp_output.run_metadata["metric"])
     if best_model is None or best_metric < metric:
         best_model = model
 ```

@@ -125,13 +125,13 @@ To create parallel processing of computationally expensive operations we use a l
   <summary>Code snippet 💻</summary>
 
 ```python
-from zenml import log_artifact_metadata
+from zenml import log_metadata
 
 score = accuracy_score(y_tst, y_pred)
 # log score along with output artifact as metadata
-log_artifact_metadata(
-    output_name="hp_result",
-    metric=float(score),
+log_metadata(
+    metadata={"metric": float(score)},
+    artifact_name="hp_result",
 )
 ```
 </details>

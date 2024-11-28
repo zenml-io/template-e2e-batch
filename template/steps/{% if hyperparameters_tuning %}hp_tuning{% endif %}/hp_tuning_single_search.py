@@ -82,6 +82,7 @@ def hp_tuning_single_search(
     log_metadata(
         metadata={"metric": float(score)},
         artifact_name="hp_result",
+        infer_artifact=True,
     )
     ### YOUR CODE ENDS HERE ###
     return cv.best_estimator_

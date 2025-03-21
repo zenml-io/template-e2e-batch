@@ -30,12 +30,12 @@ All pipelines are leveraging the Model Control Plane to bring all parts together
 
 It showcases the core ZenML concepts for supervised ML with batch predictions:
 
-* designing [ZenML pipeline steps](https://docs.zenml.io/user-guide/starter-guide/create-an-ml-pipeline)
-* using [step parameterization](https://docs.zenml.io/user-guide/starter-guide/create-an-ml-pipeline#parametrizing-a-step)
- and [step caching](https://docs.zenml.io/user-guide/starter-guide/cache-previous-executions#caching-at-a-step-level)
+* designing [ZenML pipeline steps](https://docs.zenml.io/user-guides/starter-guide/create-an-ml-pipeline)
+* using [step parameterization](https://docs.zenml.io/user-guides/starter-guide/create-an-ml-pipeline#parametrizing-a-step)
+ and [step caching](https://docs.zenml.io/user-guides/starter-guide/cache-previous-executions#caching-at-a-step-level)
 to design flexible and reusable steps
 * using [custom data types for your artifacts and writing materializers for them](https://docs.zenml.io/how-to/handle-data-artifacts/handle-custom-data-types)
-* constructing and running a [ZenML pipeline](https://docs.zenml.io/user-guide/starter-guide/create-an-ml-pipeline)
+* constructing and running a [ZenML pipeline](https://docs.zenml.io/user-guides/starter-guide/create-an-ml-pipeline)
 * usage of ZenML Model Control Plane
 * best practices for implementing and running reproducible and reliable ML
 pipelines with ZenML
@@ -274,7 +274,7 @@ model:
 
 The process of loading data is similar to training, even the same step function is used, but with the `is_inference` flag.
 
-But inference flow has an important difference - there is no need to fit preprocessing sklearn `Pipeline`, rather we need to reuse one fitted during training on the train set, to ensure that the model object gets the expected input. To do so we will use the [Model interface](https://docs.zenml.io/user-guide/starter-guide/track-ml-models#configuring-a-model-in-a-pipeline) with lookup by artifact name inside a model context to get the preprocessing pipeline fitted during the quality-assured training run. This is possible since we configured the batch inference pipeline to run inside a Model Control Plane version context.
+But inference flow has an important difference - there is no need to fit preprocessing sklearn `Pipeline`, rather we need to reuse one fitted during training on the train set, to ensure that the model object gets the expected input. To do so we will use the [Model interface](https://docs.zenml.io/user-guides/starter-guide/track-ml-models#configuring-a-model-in-a-pipeline) with lookup by artifact name inside a model context to get the preprocessing pipeline fitted during the quality-assured training run. This is possible since we configured the batch inference pipeline to run inside a Model Control Plane version context.
 <details>
   <summary>Code snippet 💻</summary>
 
@@ -298,7 +298,7 @@ df_inference = inference_data_preprocessor(
 
 In the drift reporting stage, we will use [standard step](https://docs.zenml.io/stack-components/data-validators/evidently#the-evidently-data-validator) `evidently_report_step` to build Evidently report to assess certain data quality metrics. `evidently_report_step` has a number of options, but for this example, we will build only `DataQualityPreset` metrics preset to get a number of NA values in reference and current datasets.
 
-We pass `dataset_trn` from the training pipeline as a `reference_dataset` here. To do so we will use the [Model interface](https://docs.zenml.io/user-guide/starter-guide/track-ml-models#configuring-a-model-in-a-pipeline) with lookup by artifact name inside a model context to get the training dataset used during quality-assured training run. This is possible since we configured the batch inference pipeline to run inside a Model Control Plane version context.
+We pass `dataset_trn` from the training pipeline as a `reference_dataset` here. To do so we will use the [Model interface](https://docs.zenml.io/user-guides/starter-guide/track-ml-models#configuring-a-model-in-a-pipeline) with lookup by artifact name inside a model context to get the training dataset used during quality-assured training run. This is possible since we configured the batch inference pipeline to run inside a Model Control Plane version context.
 
 After the report is built we execute another quality gate using the `drift_quality_gate` step, which assesses if a significant drift in the NA count is observed. If so, execution is stopped with an exception.
 
